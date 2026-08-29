@@ -5,10 +5,6 @@ model AdiabaticExpander "Model of an adiabatic expander to extract energy from a
   //Header Files and Parameters
   extends Simulator.Files.Icons.AdiabaticExpander;
   extends Simulator.Files.Models.Flash;
-  parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Expander Specifications", group = "Component Parameters"));
-  parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Expander Specifications", group = "Component Parameters"));
   parameter Real Eff(unit = "-") "Expander efficiency" annotation(
     Dialog(tab = "Expander Specifications", group = "Calculation Parameters"));
   //====================================================================================

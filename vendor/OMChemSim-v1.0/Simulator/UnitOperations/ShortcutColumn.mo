@@ -8,8 +8,6 @@ model ShortcutColumn "Model of a shortcut column to calculate minimum reflux in 
   import data = Simulator.Files.ChemsepDatabase;
   parameter data.GeneralProperties C[Nc] "Component instances array" annotation(
     Dialog(tab = "Column Specifications", group = "Component Parameters"));
-  parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Column Specifications", group = "Component Parameters"));
   parameter Integer HKey "Heavy Key component" annotation(
     Dialog(tab = "Column Specifications", group = "Calculation Parameters"));
   parameter Integer LKey "Light Key component" annotation(

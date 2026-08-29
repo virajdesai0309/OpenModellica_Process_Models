@@ -5,10 +5,6 @@ model Flash "Model of a flash column to separate vapor and liquid phases from a 
   //Header Files and Parameters
   extends Simulator.Files.Icons.Flash;
   import Simulator.Files.*;
-  parameter ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Flash Specifications", group = "Component Parameters"));
-  parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Flash Specifications", group = "Component Parameters"));
   parameter Boolean BTdef = false "True if flash is operated at temperature other than feed temp else false" annotation(
     Dialog(tab = "Flash Specifications", group = "Calculation Parameters"));
   parameter Boolean BPdef = false "True if flash is operated at pressure other than feed pressure else false" annotation(

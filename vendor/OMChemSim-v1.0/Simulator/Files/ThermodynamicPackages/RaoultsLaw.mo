@@ -12,26 +12,34 @@ within Simulator.Files.ThermodynamicPackages;
     // since nothing in this file actually relies on the unqualified import.
     // ---------------------------------------------------------------------
 
-    // K_c[Nc]      : Equilibrium K-value per component (y_i = K_i * x_i),
-    //                the core quantity every flash calculation needs.
-    // Cpres_p[3]   : Residual molar heat capacity per phase (mixed/liq/vap).
-    //                "Residual" = correction on top of ideal-gas behavior.
-    // Hres_p[3]    : Residual molar enthalpy per phase.
-    // Sres_p[3]    : Residual molar entropy per phase.
-    Real K_c[Nc](each min = 0), Cpres_p[3], Hres_p[3], Sres_p[3];
+    // --- PATCH NOTE #2 (not in upstream v1.0) -----------------------------
+    // K_c, Cpres_p, Hres_p, Sres_p, gmabubl_c, gmadew_c, philiqbubl_c, and
+    // phivapdew_c used to be declared directly here. But MaterialStream.mo
+    // references all eight of them too, and MaterialStream is only ever
+    // combined with RaoultsLaw as a SIBLING (both extended together by a
+    // stream model like MyFirstStream) -- not as an ancestor/descendant.
+    // OpenModelica only resolves names through a class's own ancestor
+    // chain, never sideways into a sibling's declarations, so
+    // MaterialStream failed with "Variable Cpres_p not found in scope
+    // MaterialStream" even though RaoultsLaw clearly declared it.
+    //
+    // Fix: all eight variables now live in one shared ancestor,
+    // Simulator.Files.ThermodynamicPackages.PartialThermoResults, which
+    // both MaterialStream and RaoultsLaw extend. gma_c and Pvap_c stay
+    // declared locally below since MaterialStream never references them --
+    // they're purely internal working variables for this file's own
+    // K-value calculation.
+    // ------------------------------------------------------------------------
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoResults;
 
-    // gma_c[Nc]        : Liquid-phase activity coefficient per component —
-    //                    captures non-ideal liquid mixing (e.g. azeotropes).
-    // gmabubl_c[Nc]    : Activity coefficient evaluated at the bubble point.
-    // gmadew_c[Nc]     : Activity coefficient evaluated at the dew point.
-    Real gma_c[Nc], gmabubl_c[Nc], gmadew_c[Nc];
-
-    // philiqbubl_c[Nc] : Liquid fugacity coefficient at the bubble point —
-    //                    captures non-ideal *vapor* behavior (real-gas effects).
-    // phivapdew_c[Nc]  : Vapor fugacity coefficient at the dew point.
-    // Pvap_c[Nc]       : Pure-component vapor pressure at stream temperature T,
-    //                    from the Antoine-type correlation (see Psat below).
-    Real philiqbubl_c[Nc], phivapdew_c[Nc], Pvap_c[Nc];
+    // gma_c[Nc]  : Liquid-phase activity coefficient per component --
+    //              captures non-ideal liquid mixing (e.g. azeotropes).
+    //              Stays local: only used internally below, never by
+    //              MaterialStream directly.
+    // Pvap_c[Nc] : Pure-component vapor pressure at stream temperature T,
+    //              from the Antoine-type correlation (see Psat below).
+    //              Stays local for the same reason.
+    Real gma_c[Nc], Pvap_c[Nc];
 
   equation
 

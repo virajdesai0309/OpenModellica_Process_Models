@@ -2,10 +2,6 @@ within Simulator.UnitOperations;
 
 model CompoundSeparator
   extends Simulator.Files.Icons.CompoundSeparator;
-    parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Separator Specifications", group = "Component Parameters"));
-   parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Separator Specifications", group = "Component Parameters"));
     parameter Integer SepStrm "Specified Stream" annotation(
     Dialog(tab = "Separator Specifications", group = "Separator Parameters"));
 

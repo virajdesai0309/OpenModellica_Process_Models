@@ -38,3 +38,9 @@ Licensed under the 3-Clause BSD License (see LICENSE).
   extend it. This almost certainly only worked under an older, more
   permissive OpenModelica frontend. Symptom: "Variable Nc not found in
   scope InitialGuess", persisting even after marking InitialGuess partial.
+
+- Added `each` before the `unit=` attribute on 9 array-valued parameters
+  (LiqDen, VP, LiqCp, HOV, VapCp, LiqVis, VapVis, LiqK, VapK) in
+  GeneralProperties.mo. Without it, a scalar unit modifier applied to an
+  array component is rejected as a "Non-array modification" under strict
+  Modelica compilers.

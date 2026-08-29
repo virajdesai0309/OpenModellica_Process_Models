@@ -4,10 +4,6 @@ model HeatExchanger "Model of a heat exchanger used for two streams heat exchang
   extends Simulator.Files.Icons.HeatExchanger;  
   import Simulator.Files.*;
   import Simulator.Files.Thermodynamic_Functions.*;
-  parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Heat Exchanger Specifications", group = "Component Parameters"));
-  parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Heat Exchanger Specifications", group = "Component Parameters"));
   Simulator.Files.Interfaces.matConn In_Hot(Nc = Nc) annotation(
     Placement(visible = true, transformation(origin = {-74, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Simulator.Files.Interfaces.matConn Out_Hot(Nc = Nc) annotation(

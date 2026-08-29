@@ -4,11 +4,7 @@ model AdiabaticCompressor "Model of an adiabatic compressor to provide energy to
   extends Simulator.Files.Icons.AdiabaticCompressor;
   
   extends Simulator.Files.Models.Flash;
-  parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Compressor Specifications", group = "Component Parameters"));
-  parameter Integer Nc "number of components" annotation(
-    Dialog(tab = "Compressor Specifications", group = "Component Parameters"));
-
+  
 //====================================================================================
   Real Fin(unit = "mol/s", min = 0, start = Fg) "Inlet stream molar flow rate";
   Real Pin(unit = "Pa", min = 0, start = Pg) "Inlet stream pressure"; 

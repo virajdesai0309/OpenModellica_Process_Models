@@ -6,10 +6,6 @@ within Simulator.UnitOperations.PFR;
         extends Simulator.Files.Icons.PFR;
         import Simulator.Files.*;
         import Simulator.Files.ThermodynamicFunctions.*; 
-        parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Reactor Specifications", group = "Component Parameters"));
-        parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Reactor Specifications", group = "Component Parameters"));
         parameter Real Zv = 1 "Compressiblity factor" annotation(
     Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
    

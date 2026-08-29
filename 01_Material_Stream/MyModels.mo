@@ -5,7 +5,7 @@ package MyModels
     parameter data.Ethanol eth;
     parameter data.Water wat;
     extends Simulator.Streams.MaterialStream(Nc = 2, C = {eth, wat});
-    extends Simulator.Files.ThermodynamicPackages.RaoultsLaw;
+    extends Simulator.Files.ThermodynamicPackages.RaoultsLaw(Nc = 2, C = {eth, wat});
   equation
     P = 101325;              // 1 atm, in Pa
     T = 350;                 // Kelvin

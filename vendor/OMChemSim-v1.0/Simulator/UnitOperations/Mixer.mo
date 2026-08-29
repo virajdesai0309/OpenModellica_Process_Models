@@ -3,10 +3,6 @@ within Simulator.UnitOperations;
 model Mixer "Model of a mixer to mix multiple material streams"
   extends Simulator.Files.Icons.Mixer;
   import Simulator.Files.*;
-  parameter ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Mixer Specifications", group = "Component Parameters"));
-  parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Mixer Specifications", group = "Component Parameters"));
   parameter Integer NI = 6 "Number of inlet streams" annotation(
     Dialog(tab = "Mixer Specifications", group = "Calculation Parameters"));
   

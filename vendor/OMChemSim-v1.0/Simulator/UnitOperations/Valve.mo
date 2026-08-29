@@ -2,10 +2,6 @@ within Simulator.UnitOperations;
 
 model Valve "Model of a valve to regulate the pressure of a material stream"
   extends Simulator.Files.Icons.Valve;
-    parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Valve Specifications", group = "Component Parameters"));
-    parameter Integer Nc = 3 "Number of components" annotation(
-    Dialog(tab = "Valve Specifications", group = "Component Parameters"));
   //====================================================================================
   Real Fin(unit = "mol/s", min = 0, start = Fg) "Inlet stream molar flow rate";
   Real Pin(unit = "Pa", min = 0, start = Pg) "Inlet stream pressure"; 

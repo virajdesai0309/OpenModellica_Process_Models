@@ -4,10 +4,6 @@ model Splitter "Model of a splitter to split one material stream into multiple o
   //============================================================================
   //Header Files and Parameters
   extends Simulator.Files.Icons.Splitter;
-  parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Splitter Specifications", group = "Component Parameters"));
-  parameter Integer Nc "Number of Components" annotation(
-    Dialog(tab = "Splitter Specifications", group = "Component Parameters"));
   parameter Integer No "Number of outlet streams" annotation(
     Dialog(tab = "Splitter Specifications", group = "Splitter Parameters"));
   parameter String CalcType "Calculation type: ''Split_Ratio'', ''Mass_Flow'' or ''Molar_Flow''" annotation(

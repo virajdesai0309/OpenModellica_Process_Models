@@ -4,12 +4,8 @@ model MaterialStream "Model representing Material Stream"
   //1 -  Mixture, 2 - Liquid phase, 3 - Gas Phase
   extends Simulator.Files.Icons.MaterialStream;
   import Simulator.Files.*;
-  parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Stream Specifications", group = "Component Parameters"));
-  parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Stream Specifications", group = "Component Parameters"));
-  Real P(unit = "Pa", min = 0, start = Pg) "Pressure";
-  Real T(unit = "K", start = Tg) "Temperature";
+  //Real P(unit = "Pa", min = 0, start = Pg) "Pressure";
+  //Real T(unit = "K", start = Tg) "Temperature";
   Real Pbubl(unit = "Pa", min = 0, start = Pmin) "Bubble point pressure";
   Real Pdew(unit = "Pa", min = 0, start = Pmax) "dew point pressure";
   Real xliq(unit = "-", start = xliqg, min = 0, max = 1) "Liquid Phase mole fraction";
@@ -35,6 +31,7 @@ model MaterialStream "Model representing Material Stream"
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
   extends GuessModels.InitialGuess;
+  extends Simulator.Files.ThermodynamicPackages.PartialThermoResults;
 
 equation
 //Connector equations

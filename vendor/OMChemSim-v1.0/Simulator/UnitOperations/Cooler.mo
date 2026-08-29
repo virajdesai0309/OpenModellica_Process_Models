@@ -3,10 +3,6 @@ within Simulator.UnitOperations;
 model Cooler "Model of a cooler to heat a material stream"
   extends Simulator.Files.Icons.Cooler; 
   
-    parameter Simulator.Files.ChemsepDatabase.GeneralProperties C[Nc] "Component instances array" annotation(
-    Dialog(tab = "Cooler Specifications", group = "Component Parameters"));
-    parameter Integer Nc "Number of components" annotation(
-    Dialog(tab = "Cooler Specifications", group = "Component Parameters"));
   //====================================================================================
   Real Fin(unit = "mol/s", min = 0, start = Fg) "Inlet stream molar flow rate";
   Real Pin(unit = "Pa", min = 0, start =Pg) "Inlet stream pressure";
