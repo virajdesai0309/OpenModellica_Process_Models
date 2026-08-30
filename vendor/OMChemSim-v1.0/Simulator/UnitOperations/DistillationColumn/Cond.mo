@@ -5,34 +5,27 @@ within Simulator.UnitOperations.DistillationColumn;
     parameter ChemsepDatabase.GeneralProperties C[Nc];
     parameter Integer Nc = 2 "Number of components";
     parameter Boolean Bin = false;
-    Real P(unit = "K", min = 0, start = Pg) "Pressure";
-    Real T(unit = "Pa", min = 0, start = Tg) "Temperature";
     Real Fin(unit = "mol/s", min = 0, start =Fg) "Feed molar flow rate";
     Real xin_c[Nc](each unit = "-", each min = 0, each max = 1, start=xg) "Feed components mole fraction"; 
-    Real xvapin_c[Nc](each unit = "-", each min = 0, each max = 1, start=xvapg) "Inlet components vapor molar fraction"; 
+    Real xvapin_c[Nc](each unit = "-", each min = 0, each max = 1, each start = xvapg) "Inlet components vapor molar fraction"; 
     Real Hin(unit = "kJ/kmol",start=Htotg) "Feed inlet molar enthalpy";
    
     Real Fout(unit = "mol/s", min = 0, start = Fg) "Side draw molar flow";
     Real Fvapin(unit = "mol/s", min = 0, start = Fg) "Inlet vapor molar flow";
     Real Fliqout(unit = "mol/s", min = 0, start = Fg) "Outlet liquid molar flow";
     Real xout_c[Nc](each unit = "-", each min = 0, each max = 1, start=xg) "Side draw components mole fraction";
-    Real xliqout_c[Nc](each unit = "-", each min = 0, each max = 1, start=xliqg) "Outlet components liquid mole fraction";
+    Real xliqout_c[Nc](each unit = "-", each min = 0, each max = 1, each start = xliqg) "Outlet components liquid mole fraction";
     
     Real Hvapin(unit = "kJ/kmol",start=Hvapg) "Inlet vapor molar enthalpy";
     Real Hliqout(unit = "kJ/kmol",start=Hliqg) "Outlet liquid molar enthalpy";
     Real Q(unit = "W") "Heat load";
     Real Hout(unit = "kJ/kmol",start=Htotg) "Side draw molar enthalpy";
     Real Hliqout_c[Nc](each unit = "kJ/kmol") "Outlet liquid components molar enthalpy";
-    Real x_pc[3, Nc](each unit = "-", each min = 0, each max = 1,start={xguess,xguess,xguess}) "Component mole fraction";
-    Real Pdew(unit = "Pa", min = 0, start = Pmax) "Dew point pressure";
-    Real Pbubl(unit = "Pa", min = 0,start=Pmin) "Bubble point pressure";
     
     //String sideDrawType(start = "Null");
     //L or V
     parameter String Ctype "Condenser type: Partial or Total";
-    replaceable Simulator.Files.Interfaces.matConn In(Nc = Nc) if Bin annotation(
-      Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Simulator.Files.Interfaces.matConn In_Dmy(Nc = Nc, P = 0, T = 0, x_pc = zeros(3, Nc), F = 0, H = 0, S = 0, xvap = 0) if not Bin annotation(
+    replaceable Simulator.Files.Interfaces.matConn In(Nc = Nc) annotation(
       Placement(visible = true, transformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Simulator.Files.Interfaces.matConn Out(Nc = Nc) annotation(
       Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -43,7 +36,7 @@ within Simulator.UnitOperations.DistillationColumn;
     Simulator.Files.Interfaces.enConn En annotation(
       Placement(visible = true, transformation(origin = {100, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     
-    extends GuessModels.InitialGuess;
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface(x_pc(start = {xguess, xguess, xguess}));
     
   equation
 //connector equation
@@ -52,9 +45,16 @@ within Simulator.UnitOperations.DistillationColumn;
       In.H = Hin;
       In.F = Fin;
     else
-      In_Dmy.x_pc[1, :] = xin_c[:];
-      In_Dmy.H = Hin;
-      In_Dmy.F = Fin;
+      xin_c[:] = zeros(Nc);
+      Hin = 0;
+      Fin = 0;
+      In.P = 0;
+      In.T = 0;
+      In.F = 0;
+      In.H = 0;
+      In.S = 0;
+      In.x_pc = zeros(3, Nc);
+      In.xvap = 0;
     end if;
     
     Out.P = P;

@@ -177,7 +177,7 @@ package BinaryPhaseEnvelopeUNIFAC
     //Mole Fractions (x-axis) of the T-x-y plot
     Real z1[N + 1], z2[N + 1];
     //Bubble Temperature
-    Real T[N + 1](unit = "K", each start = 300);
+    Real T[N + 1](each unit = "K", each start = 300);
     //Distribution coefficient
     Real K1[N + 1];
     //Vapour Phase Mole Fraction

@@ -36,7 +36,7 @@ model ConversionReactor "Model of a conversion reactor to calculate the outlet s
   Simulator.Files.Interfaces.enConn energy annotation(
     Placement(visible = true, transformation(origin = {0, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {0, -130}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   
-  extends GuessModels.InitialGuess;
+  extends Simulator.Files.Models.ReactionManager.PartialReactionInterface;
 equation
 //=============================================================================
 //Connector Equations

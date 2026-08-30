@@ -6,7 +6,7 @@ model Mixer "Model of a mixer to mix multiple material streams"
   parameter Integer NI = 6 "Number of inlet streams" annotation(
     Dialog(tab = "Mixer Specifications", group = "Calculation Parameters"));
   
-  Real Pin[NI](unit = "Pa", min = 0, start = Pg) "Inlet stream pressure";
+  Real Pin[NI](each unit = "Pa", each min = 0, each start = Pg) "Inlet stream pressure";
   Real xin_sc[NI, Nc](each unit = "-", each min = 0, each max = 1) "Inlet stream component mol fraction";
   Real Fin_s[NI](each unit = "mol/s", each min = 0, each start = Fg) "Inlet stream Molar Flow";
   Real Hin_s[NI](each unit = "kJ/kmol") "Inlet stream molar enthalpy";
@@ -17,10 +17,10 @@ model Mixer "Model of a mixer to mix multiple material streams"
   parameter String outPress "Calculation mode for outet pressure: ''Inlet_Minimum'', ''Inlet_Average'', ''Inlet_Maximum''" annotation(
     Dialog(tab = "Mixer Specifications", group = "Calculation Parameters"));
   
-  Real Fout(unit = "mol/s", each min = 0, each start = Fg) "Outlet stream molar flow";
+  Real Fout(unit = "mol/s", min = 0, start = Fg) "Outlet stream molar flow";
   Real Pout(unit = "Pa", min = 0, start = Pg) "Outlet stream pressure";
   Real Hout(unit = "kJ/kmol") "Outlet stream molar enthalpy";
-  Real Tout(unit = "K", each min = 0, each start = Tg) "Outlet stream temperature";
+  Real Tout(unit = "K", min = 0, start = Tg) "Outlet stream temperature";
   Real Sout(unit = "kJ/[kmol.K]") "Outlet stream molar entropy";
   Real xvapout(unit = "-", min = 0, max = 1, start = xvapg) "Outlet stream vapor phase mol fraction";
   Real xout_c[Nc](each unit = "-", each min = 0, each max = 1, start = xguess) "Outlet stream component mol fraction";

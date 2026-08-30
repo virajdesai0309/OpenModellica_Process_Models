@@ -15,10 +15,8 @@ algorithm
 
 for i in 1:Nc loop
  if Sc[i]<0 then
- N:=i;
- break;
- else
- i:=i;
+  N:=i;
+  break;
  end if;
 end for;
 
@@ -28,13 +26,9 @@ for i in 1:Nc loop
 if Sc[i]<0 then
  v2:=F[i]/abs(Sc[i]);
 if v2<v1 then
- N:=i;
- v1:=v2;
- else
- i:=i;
+  N:=i;
+  v1:=v2;
  end if;
- else
-  i:=i;
-  end if;
+ end if;
   end for;
 end BaseCalc;

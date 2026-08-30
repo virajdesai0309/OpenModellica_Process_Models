@@ -27,7 +27,7 @@ within Simulator.UnitOperations.PFR;
         //Inlet Stream Variables
         Real Tin(unit = "K", min = 0, start = Tg) "Inlet stream temperature";
         Real Pin(unit = "Pa", min = 0, start = Pg) "Inlet stream pressure";
-        Real Fin_pc[3, Nc](each unit = "mol/s", each min = 0, start={Fg,Fliqg,Fvapg}) "Inlet stream components molar flow rate in phase";
+        Real Fin_pc[3, Nc](each unit = "mol/s", each min = 0, start = {fill(Fg, Nc), fill(Fliqg, Nc), fill(Fvapg, Nc)}) "Inlet stream components molar flow rate in phase";
         Real Fin_p[3](each unit = "mol/s", each min = 0,start={Fg,Fliqg,Fvapg}) "Inlet stream molar flow rate in phase";
         Real xin_pc[3, Nc](each unit = "-", each min = 0, each max = 1, start={xg,xg,xg}) "Inlet stream mole fraction";
         Real Hin(unit = "kJ/kmol",start=Htotg) "Inlet stream enthalpy";
@@ -39,7 +39,7 @@ within Simulator.UnitOperations.PFR;
         Real Tout(unit = "K", min = 0, start = Tg) "Outlet stream temperature";
         Real Pout(unit = "Pa", min  = 0, start = Pg) "Outlet stream pressure";
         Real Fout_p[3](each unit = "mol/s", each min = 0, start={Fg,Fliqg,Fvapg}) "Outlet stream molar flow rate";
-        Real Fout_pc[3, Nc](each unit = "mol/s", each min = 0, start={Fg,Fliqg,Fvapg}) "Outlet stream components molar flow rate";
+        Real Fout_pc[3, Nc](each unit = "mol/s", each min = 0, start = {fill(Fg, Nc), fill(Fliqg, Nc), fill(Fvapg, Nc)}) "Outlet stream components molar flow rate";
         Real xout_pc[3, Nc](each min = 0,start={xg,xg,xg}) "Mole Fraction of Component in outlet stream";
         Real Hout(unit = "kJ/kmol",start=Htotg) "Outlet stream molar enthalpy";
         Real Sout(unit = "kJ/[kmol.K]") "Outlet stream molar entropy";

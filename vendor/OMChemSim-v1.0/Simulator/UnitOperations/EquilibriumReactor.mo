@@ -50,7 +50,6 @@ extends Simulator.Files.Icons.EquilibriumReactor;
     Dialog(tab = "Reactor Specifications", group = "Calculation Parameters"));
   //Reaction Variables
   Real SC_rc[Nr,Nc]"Stoichiometric coefficients of the components";
-  Integer BC_r[Nr] "Base component of reaction";
   Real Ndel[Nr];
   Real Scabs[Nr,Nc]"Relative stoichiometry with respect to base component";
   Real Ext_r[Nr](each start=xvapg) "Reaction Extent";

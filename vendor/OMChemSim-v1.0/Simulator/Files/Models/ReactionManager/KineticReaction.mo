@@ -6,19 +6,14 @@ within Simulator.Files.Models.ReactionManager;
   import data = Simulator.Files.Chemsep_Database;
   //  parameter ChemsepDatabase.GeneralProperties C[Nc];
   //  parameter Integer Nc;
-  parameter Integer Nr "Number of reactions" annotation (Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
-  parameter Integer BC_r[Nr] "Base component of reactions" annotation(Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
  //  parameter Integer Comp annotation(
   //   Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
   //Number of components involved in the reaction
-  parameter Real Coef_cr[Nc, Nr] "Stoichiometric coefficient of the components" annotation(Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
   parameter Real DO_cr[Nc, Nr] "Forward order of the components" annotation(Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
   //  parameter Real RO_cr[Nc, Nr];
   //Reverse order of reactions
-  Real Schk_r[Nr];
   //Returns whether the specified stoichiometry is correct
-  Real Hf_c[Nc];
-  Real Hr_r[Nr];
+  extends Simulator.Files.Models.ReactionManager.PartialReactionInterface;
   parameter Real Af_r[Nr] "Arrhenius constants of forward reaction" annotation(Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
   parameter Real Ef_r[Nr] "Activation Energy of the forward reaction" annotation(Dialog(tab = "Reactions", group = "Kinetic Reaction Parameters"));
   //  parameter Real Ab_r[Nr] "Arrhenius constants of reverse reaction";

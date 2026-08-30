@@ -1,6 +1,7 @@
 within Simulator.Files.ThermodynamicPackages;
 
  model UNIFAC
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
     //Libraries
     import Simulator.Files.*;
     import Simulator.Files.ThermodynamicFunctions;
@@ -28,8 +29,6 @@ within Simulator.Files.ThermodynamicPackages;
     //Activity Coefficients
     Real gmacom_c[Nc] "Combinatorial activity coefficient of comp i";
     Real gmares_c[Nc] "Residual activity coefficient of comp i";
-    Real gma_c[Nc] " Activity coefficient";
-    Real K_c[Nc] "Equlibrium constant of compound i";
     //Fugacity coefficient  at the Bubble and Dew Points
     Real philbubl_c[Nc], phivdew_c[Nc];
     //Activity Coefficient at the Bubble and Dew Points

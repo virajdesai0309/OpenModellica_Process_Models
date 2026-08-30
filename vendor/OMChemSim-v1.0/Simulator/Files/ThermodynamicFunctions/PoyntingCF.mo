@@ -2,15 +2,15 @@ within Simulator.Files.ThermodynamicFunctions;
 
 function PoyntingCF
   extends Modelica.Icons.Function;
-  import Simulator.Files.Thermodynamic_Functions.*;
+  import Simulator.Files.ThermodynamicFunctions.*;
   input Integer Nc;
   input Real Pc, Tc, RP, AF, MW;
   input Real T, P;
   input Real gma, Psat, rho;
-  parameter Integer Choice = 2;
   output Real PCF;
 protected
   Real vl;
+  parameter Integer Choice = 2;
 algorithm
     if T < 0.98 * Tc then
       vl := 1 / rho;

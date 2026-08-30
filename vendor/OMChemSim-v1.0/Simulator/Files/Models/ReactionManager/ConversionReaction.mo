@@ -5,17 +5,9 @@ within Simulator.Files.Models.ReactionManager;
   import Simulator.Files.*;
   import data = Simulator.Files.Chemsep_Database;
     //Number of Reactions involved in the process
-  parameter Integer Nr "Number of reactions" annotation(
-    Dialog(tab = "Reactions", group = "Conversion Reaction Parameters"));
-  parameter Integer BC_r[Nr] "Base component in the reactions" annotation(
-    Dialog(tab = "Reactions", group = "Conversion Reaction Parameters"));
-  parameter Real Coef_cr[Nc, Nr] "Stoichiometric coefficient of components" annotation(
-    Dialog(tab = "Reactions", group = "Conversion Reaction Parameters"));
   //Stochiometry of reactions
-  Real Schk_r[Nr];
   //Returns whether the specified stoichiometry is correct
-  Real Hf_c[Nc];
-  Real Hr_r[Nr];
+  extends Simulator.Files.Models.ReactionManager.PartialReactionInterface;
 
 equation
 //Check of stoichiometric balance

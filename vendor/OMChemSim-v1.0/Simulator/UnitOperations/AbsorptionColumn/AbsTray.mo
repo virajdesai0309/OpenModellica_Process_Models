@@ -2,18 +2,11 @@ within Simulator.UnitOperations.AbsorptionColumn;
 
 model AbsTray "Model of a tray used in absorption column"
     import Simulator.Files.*;
-    parameter Integer Nc;
-    parameter ChemsepDatabase.GeneralProperties C[Nc];
-    Real P(min = 0, start = Pg);
-    Real T(min = 0, start = Tg);
     Real Fvap_s[2](each min = 0, start={Fg,Fg});
     Real Fliq_s[2](each min = 0, start={Fliqg,Fliqg});
-    Real xvap_sc[2, Nc](each min = 0, each max = 1, start=xvapg);
-    Real xliq_sc[2, Nc](each min = 0, each max = 1, start=xliqg);
+    Real xvap_sc[2, Nc](each min = 0, each max = 1, each start = xvapg);
+    Real xliq_sc[2, Nc](each min = 0, each max = 1, each start = xliqg);
     Real Hvap_s[2](start={Hvapg,Hvapg}), Hliq_s[2](start={Hliqg,Hliqg}), Hvapout_c[Nc], Hliqout_c[Nc];
-    Real x_pc[3, Nc](each min =0, each max = 0,start=xliqg);
-    Real Pdew(min = 0, start =Pmax);
-    Real Pbubl(min = 0, start =Pmin);
   
     Simulator.Files.Interfaces.trayConn In_Liq(Nc = Nc) annotation(
       Placement(visible = true, transformation(origin = {-50, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-50, 40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -24,7 +17,7 @@ model AbsTray "Model of a tray used in absorption column"
     Simulator.Files.Interfaces.trayConn In_Vap(Nc = Nc) annotation(
       Placement(visible = true, transformation(origin = {50, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {50, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   
-    extends GuessModels.InitialGuess;
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface(x_pc(each start = xliqg));
   equation
 //connector equation
     In_Liq.F = Fliq_s[1];

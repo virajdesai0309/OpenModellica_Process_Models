@@ -5,31 +5,24 @@ model EquilibriumReaction "Model of an equilibrium reaction used in equilibrium 
   import Simulator.Files.*;
   import data = Simulator.Files.ChemsepDatabase;
 
-  parameter Integer Nr "Number of reactions" annotation(
-    Dialog(tab = "Reactions", group = "Equilibrium Reaction Parameters"));
-  parameter Real Coef_cr[Nc, Nr] "Stoichiometric coefficient of components" annotation(
-    Dialog(tab = "Reactions", group = "Equilibrium Reaction Parameters"));
   parameter String Rmode = "ConstantK" "Mode of specifying equilibrium constant: ''ConstantK'', ''Tempfunc''" annotation(
     Dialog(tab = "Reactions", group = "Equilibrium Reaction Parameters"));
-  parameter Real Kg[Nr] "Equilibrium Constant, applicable if ConstantK is chosen in Rmode" annotation(
+  parameter Real Kg[Nr] = zeros(Nr) "Equilibrium Constant, applicable if ConstantK is chosen in Rmode" annotation(
     Dialog(tab = "Reactions", group = "Equilibrium Reaction Parameters"));
-  parameter Real A[Nr,4] "Coefficient of A in equation logk =(A1 + A2*T + A3*T^2 + A4*logT)/(B1 + B2*T + B3*T^2 + B4*logT), applicable if Tempfunc is chosen in Rmode" annotation(
+  parameter Real A[Nr,4] = zeros(Nr, 4) "Coefficient of A in equation logk =(A1 + A2*T + A3*T^2 + A4*logT)/(B1 + B2*T + B3*T^2 + B4*logT), applicable if Tempfunc is chosen in Rmode" annotation(
     Dialog(tab = "Reactions", group = "Equilibrium Reaction Parameters"));
-  parameter Real B[Nr,4] "Coefficient of B in equation logk =(A1 + A2*T + A3*T^2 + A4*logT)/(B1 + B2*T + B3*T^2 + B4*logT), applicable if Tempfunc is chosen in Rmode" annotation(
+  parameter Real B[Nr,4] = zeros(Nr, 4) "Coefficient of B in equation logk =(A1 + A2*T + A3*T^2 + A4*logT)/(B1 + B2*T + B3*T^2 + B4*logT), applicable if Tempfunc is chosen in Rmode" annotation(
     Dialog(tab = "Reactions", group = "Equilibrium Reaction Parameters"));
    Real T;
   //Stochiometry of reactions
-  Real Schk_r[Nr];
   //Returns whether the specified stoichiometry is correct
-  Real Hf_c[Nc];
-  Real Hr_r[Nr];
 
   
   //Equilibrium Constant
-  Real K[Nr](start=xliqg);
+  Real K[Nr](each start = xliqg);
   Real N[Nr](each start= Fg),D[Nr](each start=Fg);
   
-  extends Simulator.GuessModels.InitialGuess;
+  extends Simulator.Files.Models.ReactionManager.PartialReactionInterface;
 equation
  
 

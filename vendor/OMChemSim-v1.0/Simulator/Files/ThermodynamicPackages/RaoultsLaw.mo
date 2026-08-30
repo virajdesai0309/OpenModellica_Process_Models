@@ -30,7 +30,7 @@ within Simulator.Files.ThermodynamicPackages;
     // they're purely internal working variables for this file's own
     // K-value calculation.
     // ------------------------------------------------------------------------
-    extends Simulator.Files.ThermodynamicPackages.PartialThermoResults;
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
 
     // gma_c[Nc]  : Liquid-phase activity coefficient per component --
     //              captures non-ideal liquid mixing (e.g. azeotropes).
@@ -39,7 +39,6 @@ within Simulator.Files.ThermodynamicPackages;
     // Pvap_c[Nc] : Pure-component vapor pressure at stream temperature T,
     //              from the Antoine-type correlation (see Psat below).
     //              Stays local for the same reason.
-    Real gma_c[Nc], Pvap_c[Nc];
 
   equation
 

@@ -1,6 +1,7 @@
 within Simulator.Files.ThermodynamicPackages;
 
   model UNIQUAC
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
     //Libraries
     import Simulator.Files.*;
     //Parameter Section
@@ -22,7 +23,6 @@ within Simulator.Files.ThermodynamicPackages;
     Real gmacom_c[Nc](each start = 1.2) "Combinatorial Part of activity coefficent at input conditions";
     Real gmares_c[Nc](each start = 1.2) "Residual part of activity coefficient at input conditions";
     Real gmanew_c[Nc](each start = 1.2);
-    Real gma_c[Nc](each start = 1.2) "Activity coefficient with Poynting correction";
     //Fugacity coefficient
     Real phil[Nc](each start = 0.5) "Fugacity coefficient at the input conditions";
     //Dew Point Calculation Variables
@@ -36,9 +36,7 @@ within Simulator.Files.ThermodynamicPackages;
     Real  gmacdew_c[Nc](each start = 5) "Combinatorial Part of activity coefficent at dew point";
     Real  gmardew_c[Nc](each start = 2.5) "Residual part of activity coefficient at dew point";
     Real  gmaolddew_c[Nc](each start = 2.2) "Combinatorial Part of activity coefficent(without correction)";
-    Real gmadew_c[Nc](each start = 2.2) "Activity coefficent at dew point";
     //Fugacity coefficient
-    Real  phivapdew_c[Nc] "Vapour Fugacity coefficient at dew point";
     Real phildew_c[Nc](each start = 0.5);
     Real PCFdew_c[Nc] "Poynting Correction Factor";
     //Bubble Point Calculation Variables
@@ -51,17 +49,12 @@ within Simulator.Files.ThermodynamicPackages;
     Real gmacbubl_c[Nc](each start = 2) "Combinatorial Part of activity coefficent at bubble point";
     Real  gmarbubl_c[Nc](each start = 1) "Residual part of activity coefficent at bubble point";
     Real  gmaoldbubl_c[Nc](each start = 1) "Combinatorial Part of activity coefficent(without correction)";
-    Real  gmabubl_c[Nc](each start = 1) "Activity coefficent at bubble point";
     //Fugacity coefficient
-    Real  philiqbubl_c[Nc];
     Real phibubl[Nc](each start = 0.5) "Liquid Phase Fugacity coefficient";
     Real PCFbubl_c[Nc] "Poynting Correction Factor";
     //Phase Envelope
-    Real Pvap_c[Nc](each unit = "Pa") "Saturated Vapour Pressure at the input temperature";
     Real PCF_c[Nc] "Poynting correction factor";
-    Real K_c[Nc](each start = 0.7) "Distribution Coefficient";
     //Residual Energy Parameters
-    Real Cpres_p[3], Hres_p[3], Sres_p[3];
     //Transport Properties at the input conditions
     Real Density[Nc](each unit = "kmol/m^3");
     Real A[Nc], B[Nc], D[Nc], E[Nc], Ff[Nc];

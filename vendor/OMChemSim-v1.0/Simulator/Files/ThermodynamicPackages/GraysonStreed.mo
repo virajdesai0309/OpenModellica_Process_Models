@@ -1,10 +1,11 @@
 within Simulator.Files.ThermodynamicPackages;
 
  model GraysonStreed
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
   
   //====================================================================
   //Header Files and Parameters
-    import Simulator.Files.Thermodynamic_Functions.*;
+    import Simulator.Files.ThermodynamicFunctions.*;
     parameter Real R = 8.314;
     parameter Real u = 1;
     import Simulator.Files.*;
@@ -17,11 +18,9 @@ within Simulator.Files.ThermodynamicPackages;
     
   //====================================================================
   //Model Variables
-    Real Cpres_p[3], Hres_p[3], Sres_p[3];
-    Real K_c[Nc];
-    Real S(start = 3), gma_c[Nc];
-    Real philiq_c[Nc](each start = 2), phivap_c[Nc](each start = 0.99), phivapdew_c[Nc](each start = 1.2);
-    Real S_bubl, philiqbubl_c[Nc](each start = 1.5), gmabubl[Nc];
+    Real S(start = 3);
+    Real philiq_c[Nc](each start = 2), phivap_c[Nc](each start = 0.99);
+    Real S_bubl, gmabubl[Nc];
     //Vapour Phase Fugacity coefficient
     Real a_c[Nc], b_c[Nc];
     Real aij_c[Nc, Nc];
@@ -32,8 +31,7 @@ within Simulator.Files.ThermodynamicPackages;
     Real t1dew_c[Nc], t3dew_c[Nc], t4dew, t2dew(start = 10);
     Real Cvap[4], ZRvap[3, 2], ZVap[3];
     Real Cvapdew[4], ZRvapdew[3, 2], ZVapdew[3];
-    Real gmabubl_c[Nc](each start = 0.5), gmadew_c[Nc](each start = 2.06221);
-    Real gmaliq_c[Nc], Pvap_c[Nc];
+    Real gmaliq_c[Nc];
     Real A_c[Nc], B_c[Nc], C_c[Nc], D_c[Nc], E, G, H_c[Nc], I, J;
     Real xliqdew_c[Nc];
     Real Tr_c[Nc];

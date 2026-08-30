@@ -16,29 +16,24 @@ within Simulator.Files.ThermodynamicPackages;
     Real m_c[Nc];
     Real q_c[Nc];
     Real aij_c[Nc, Nc];
-    Real K_c[Nc](start = K_guess);
-    Real Pvap_c[Nc](start=Pg) "Saturated Vapor Pressure";
     Real philiq_c[Nc](each start = 5) "Liquid Phase Fugasity coefficient";
     Real phivap_c[Nc](each start = 5) "Vapor Phase Fugasity coefficient";
-    Real gmabubl_c[Nc], gmadew_c[Nc];
-    Real philiqbubl_c[Nc], phivapdew_c[Nc];
-    Real Cpres_p[3], Hres_p[3], Sres_p[3];
     Real aMliq, bMliq;
     Real Aliq(start=xliqg), Bliq(start=xvapg);
     Real Cliq[4];
-    Real Z_RL[3, 2](start=xliqg);
-    Real Zliq[3](start=xliqg), Zll(start=xvapg);
+    Real Z_RL[3, 2](each start = xliqg);
+    Real Zliq[3](each start = xliqg), Zll(start = xvapg);
     Real sumxliq[Nc];
     Real aMvap, bMvap;
     Real Avap(start=xliqg), Bvap(start=xvapg);
     Real Cvap[4];
-    Real Z_RV[3, 2](start= xvapg);
-    Real Zvap[3](start=xvapg), Zvv;
+    Real Z_RV[3, 2](each start = xvapg);
+    Real Zvap[3](each start = xvapg), Zvv;
     Real sumxvap[Nc];
     Real A, B, Cdummy, D_c[Nc], E, F, G, H_c[Nc], I_c[Nc], J_c[Nc];
     Real gma[Nc];
     
-    extends GuessModels.InitialGuess;
+    extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
   //======================================================================
   equation
     for i in 1:Nc loop

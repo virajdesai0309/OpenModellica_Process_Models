@@ -4,10 +4,10 @@ model MaterialStream "Model representing Material Stream"
   //1 -  Mixture, 2 - Liquid phase, 3 - Gas Phase
   extends Simulator.Files.Icons.MaterialStream;
   import Simulator.Files.*;
-  //Real P(unit = "Pa", min = 0, start = Pg) "Pressure";
-  //Real T(unit = "K", start = Tg) "Temperature";
-  Real Pbubl(unit = "Pa", min = 0, start = Pmin) "Bubble point pressure";
-  Real Pdew(unit = "Pa", min = 0, start = Pmax) "dew point pressure";
+  // P, T, x_pc, Pbubl and Pdew are declared in PartialThermoInterface (extended
+  // below) rather than here, because the thermodynamic package mixed in
+  // alongside this model reads them and can only resolve names through a
+  // shared ancestor. See ATTRIBUTION.md.
   Real xliq(unit = "-", start = xliqg, min = 0, max = 1) "Liquid Phase mole fraction";
   Real xvap(unit = "-", start = xvapg, min = 0, max = 1) "Vapor Phase mole fraction";
   Real xmliq(unit = "-", start = xliqg, min = 0, max = 1) "Liquid Phase mass fraction";
@@ -15,7 +15,6 @@ model MaterialStream "Model representing Material Stream"
   Real F_p[3](each unit = "mol/s", each min = 0, start={Fg,Fliqg,Fvapg}) "Total molar flow in phase";
   Real Fm_p[3](each unit = "kg/s", each min = 0, each start = Fg) "Total mass flow in phase";
   Real MW_p[3](each unit = "-", each start = 0, each min = 0) "Average Molecular weight in phase";
-  Real x_pc[3, Nc](each unit = "-", each min = 0, each max = 1, start={xguess,xg,yg}) "Component mole fraction in phase";
   Real xm_pc[3, Nc](each unit ="-", start={xguess,xg,yg}, each min = 0, each max = 1) "Component mass fraction in phase";
   Real F_pc[3, Nc](each unit = "mol/s", each start = Fg, each min = 0) "Component molar flow in phase";
   Real Fm_pc[3, Nc](each unit = "kg/s", each min = 0, each start = Fg) "Component mass flow in phase";
@@ -30,8 +29,7 @@ model MaterialStream "Model representing Material Stream"
   Simulator.Files.Interfaces.matConn Out(Nc = Nc) annotation(
     Placement(visible = true, transformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
-  extends GuessModels.InitialGuess;
-  extends Simulator.Files.ThermodynamicPackages.PartialThermoResults;
+  extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
 
 equation
 //Connector equations

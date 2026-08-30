@@ -7,6 +7,10 @@ model AbsCol "Model of an absorption column representing fractionating towers wh
     Dialog(tab = "Column Specifications", group = "Component Parameters"));
     parameter Integer Nc "Number of Components" annotation(
     Dialog(tab = "Column Specifications", group = "Component Parameters"));
+    parameter Real xg_user[Nc] = zeros(Nc) "Composition guess for the trays; all zeros = assume equimolar" annotation(
+    Dialog(tab = "Column Specifications", group = "Column Parameters"));
+    parameter Real Tg_user = 0 "Temperature guess for the trays, K; 0 = derive from the component set" annotation(
+    Dialog(tab = "Column Specifications", group = "Column Parameters"));
     parameter Integer Nt "Number of stages" annotation(
     Dialog(tab = "Column Specifications", group = "Column Parameters"));
  
@@ -18,6 +22,13 @@ model AbsCol "Model of an absorption column representing fractionating towers wh
       Placement(visible = true, transformation(origin = {100, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {250, 300}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Simulator.Files.Interfaces.matConn Out_Bot(Nc = Nc) annotation(
       Placement(visible = true, transformation(origin = {100, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {250, -300}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    /* Tray type is chosen by the subclass: redeclare it with a composite of
+       AbsTray and a thermodynamic package. */
+    replaceable model TrayModel = Simulator.UnitOperations.AbsorptionColumn.AbsTray
+      constrainedby Simulator.UnitOperations.AbsorptionColumn.AbsTray
+      "Tray model, redeclared with a tray + thermodynamic package composite";
+    TrayModel tray[Nt](each Nc = Nc, each C = C, each Tg_user = Tg_user, each xg_user = xg_user);
+
   equation
 //connector equation
   tray[1].Fliq_s[1] = In_Top.F;

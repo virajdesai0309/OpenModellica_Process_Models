@@ -35,8 +35,23 @@ within Simulator.UnitOperations.DistillationColumn;
       Placement(visible = true, transformation(origin = {252, -588}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {250, -598}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Simulator.Files.Interfaces.matConn Out_s[Nout](each Nc = Nc) annotation(
       Placement(visible = true, transformation(origin = {-36, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Simulator.Files.Interfaces.enConn En[NQ](each Nc = Nc) annotation(
+    Simulator.Files.Interfaces.enConn En[NQ] annotation(
       Placement(visible = true, transformation(origin = {-34, -54}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-70, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    /* Internals chosen by the subclass -- see the note in AbsCol.mo. */
+    replaceable model CondenserModel = Simulator.UnitOperations.DistillationColumn.Cond
+      constrainedby Simulator.UnitOperations.DistillationColumn.Cond
+      "Condenser model, redeclared with a condenser + thermodynamic package composite";
+    replaceable model TrayModel = Simulator.UnitOperations.DistillationColumn.DistTray
+      constrainedby Simulator.UnitOperations.DistillationColumn.DistTray
+      "Tray model, redeclared with a tray + thermodynamic package composite";
+    replaceable model ReboilerModel = Simulator.UnitOperations.DistillationColumn.Reb
+      constrainedby Simulator.UnitOperations.DistillationColumn.Reb
+      "Reboiler model, redeclared with a reboiler + thermodynamic package composite";
+
+    CondenserModel condenser(Nc = Nc, C = C, Ctype = Ctype, Bin = Bin_t[1]);
+    ReboilerModel reboiler(Nc = Nc, C = C, Bin = Bin_t[Nt]);
+    TrayModel tray[Nt - 2](each Nc = Nc, each C = C, Bin = Bin_t[2:Nt - 1]);
+
   equation
   for i in 1:Ni loop
     if InT_s[i] == 1 then

@@ -3,7 +3,7 @@ within Simulator.UnitOperations;
 model HeatExchanger "Model of a heat exchanger used for two streams heat exchange"
   extends Simulator.Files.Icons.HeatExchanger;  
   import Simulator.Files.*;
-  import Simulator.Files.Thermodynamic_Functions.*;
+  import Simulator.Files.ThermodynamicFunctions.*;
   Simulator.Files.Interfaces.matConn In_Hot(Nc = Nc) annotation(
     Placement(visible = true, transformation(origin = {-74, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {-100, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Simulator.Files.Interfaces.matConn Out_Hot(Nc = Nc) annotation(
@@ -33,7 +33,7 @@ model HeatExchanger "Model of a heat exchanger used for two streams heat exchang
   Real Fhin(unit = "mol/s", start=Fg) "Hot inlet stream molar flow rate";
   Real Hhin(unit = "kJ/kmol", start=Htotg) "Hot inlet stream molar enthalpy";
   Real Shin(unit = "kJ/[kmol.K]") "Hot inlet stream molar entropy";
-  Real xhin_pc[2, Nc](each unit = "-", start={xg,xg}) "Hot intlet stream component mole fraction";
+  Real xhin_pc[3, Nc](each unit = "-", start = {xguess, xg, yg}) "Hot intlet stream component mole fraction";
   Real xvaphin(unit = "-", start=xvapg) "Hot inlet stream vapor phase mole fraction";
   //Hot Stream Outlet
   Real Phout(unit = "Pa", start=Pg) "Hot outlet stream pressure";
@@ -41,24 +41,24 @@ model HeatExchanger "Model of a heat exchanger used for two streams heat exchang
   Real Fhout(unit = "mol/s", start=Fg) "Hot outlet stream molar flow rate";
   Real Hhout(unit = "kJ/kmol", start=Htotg) "Hot outlet stream molar enthalpy";
   Real Shout(unit = "kJ/[kmol.K]") "Hot outlet stream molar entropy";
-  Real xhout_pc[2, Nc](each unit = "-", start={xg,xg}) "Hot outlet stream component mole fraction";
+  Real xhout_pc[3, Nc](each unit = "-", start = {xguess, xg, yg}) "Hot outlet stream component mole fraction";
   Real xvaphout(unit = "-") "Hot outlet stream vapor phase mole fraction";
   //Cold Stream Inlet
   Real Pcin(unit = "Pa", start=Pg) "Cold inlet stream pressure";
   Real Tcin(unit = "K", start=Tg) "Cold inlet stream temperature";
-  Real Fcin[1](unit = "mol/s", start=Fg) "Cold inlet stream molar flow rate";
+  Real Fcin[1](each unit = "mol/s", each start = Fg) "Cold inlet stream molar flow rate";
   Real Hcin(unit = "kJ/kmol", start=Htotg) "Cold inlet stream molar enthalpy";
   Real Scin(unit = "kJ/[kmol.K]") "Cold inlet stream molar entropy";
-  Real xcin_pc[2, Nc](unit = "-") "Cold inlet stream component mole fraction";
+  Real xcin_pc[3, Nc](each unit = "-", start = {xguess, xg, yg}) "Cold inlet stream component mole fraction";
   Real xvapcin(unit = "-", start=xvapg) "Cold inlet stream vapor phase mole fraction";
   //Cold Stream Outlet
   Real Pcout(unit = "Pa", start=Pg) "Cold outlet stream pressure";
   Real Tcout(unit = "K", start=Tg)"Cold outlet stream temperature";
   Real couttT(unit = "K", start=Tg) ;
-  Real Fcout[1](unit = "mol/s", start=Fg) "Cold outlet stream molar flow rate";
+  Real Fcout[1](each unit = "mol/s", each start = Fg) "Cold outlet stream molar flow rate";
   Real Hcout(unit = "kJ/kmol", start=Htotg) "Cold outlet stream molar enthalpy";
   Real Scout(unit = "kJ/kmol.K") "Cold outlet stream molar entropy";
-  Real xcout_pc[2, Nc](each unit = "-", start={xg,xg}) "Cold outlet stream component mole fraction";
+  Real xcout_pc[3, Nc](each unit = "-", start = {xguess, xg, yg}) "Cold outlet stream component mole fraction";
   Real xvapcout(unit = "-", start=xvapg) "Cold outlet stream vapor phase mole fraction";
   
   Real Qact(start = 2000) "Actual Heat Load";
@@ -242,6 +242,7 @@ model HeatExchanger "Model of a heat exchanger used for two streams heat exchang
   Real Ec;
   Real he(unit = "W/m^2.K") "Shell Side Heat Transfer Coefficient";
   
+ extends GuessModels.InitialGuess;
   protected
   parameter Real aa1 = 0.9078565328950;
   parameter Real bb1 = 0.6633110612656;
@@ -273,7 +274,6 @@ model HeatExchanger "Model of a heat exchanger used for two streams heat exchang
   parameter Real F =0.9828;
   parameter Real m = 0.96;
  //===========================================================================================================
- extends GuessModels.InitialGuess;
 equation
 //Hot Stream Inlet
   In_Hot.P = Phin;
@@ -283,6 +283,7 @@ equation
   In_Hot.S = Shin;
   In_Hot.x_pc[1, :] = xhin_pc[1, :];
   In_Hot.x_pc[2, :] = xhin_pc[2, :];
+  In_Hot.x_pc[3, :] = xhin_pc[3, :];
   In_Hot.xvap = xvaphin;
 //Hot Stream Outlet
   Out_Hot.P = Phout;
@@ -292,6 +293,7 @@ equation
   Out_Hot.S = Shout;
   Out_Hot.x_pc[1, :] = xhout_pc[1, :];
   Out_Hot.x_pc[2, :] = xhout_pc[2, :];
+  Out_Hot.x_pc[3, :] = xhout_pc[3, :];
   Out_Hot.xvap = xvaphout;
 //Cold Stream In
   In_Cold.P = Pcin;
@@ -301,6 +303,7 @@ equation
   In_Cold.S = Scin;
   In_Cold.x_pc[1, :] = xcin_pc[1, :];
   In_Cold.x_pc[2, :] = xcin_pc[2, :];
+  In_Cold.x_pc[3, :] = xcin_pc[3, :];
   In_Cold.xvap = xvapcin;
 //Cold Stream Out
   Out_Cold.P = Pcout;
@@ -310,6 +313,7 @@ equation
   Out_Cold.S = Scout;
   Out_Cold.x_pc[1, :] = xcout_pc[1, :];
   Out_Cold.x_pc[2, :] = xcout_pc[2, :];
+  Out_Cold.x_pc[3, :] = xcout_pc[3, :];
   Out_Cold.xvap = xvapcout;
 equation
   Fhin = Fhout;

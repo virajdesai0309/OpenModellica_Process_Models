@@ -86,6 +86,8 @@ equation
 //Flash of Outlet Stream
   T = Tout;
   P = Pout;
+//The thermodynamic package is evaluated at the reactor outlet composition.
+  x_pc = xout_pc;
     Pbubl = sum(gmabubl_c[:] .* xout_pc[1, :] .* exp(C[:].VP[2] + C[:].VP[3] / T + C[:].VP[4] * log(T) + C[:].VP[5] .* T .^ C[:].VP[6]) ./ philiqbubl_c[:]);
   Pdew = 1 / sum(xout_pc[1, :] ./ (gmadew_c[:] .* exp(C[:].VP[2] + C[:].VP[3] / T + C[:].VP[4] * log(T) + C[:].VP[5] .* T .^ C[:].VP[6])) .* phivapdew_c[:]);
 //===============================================================================

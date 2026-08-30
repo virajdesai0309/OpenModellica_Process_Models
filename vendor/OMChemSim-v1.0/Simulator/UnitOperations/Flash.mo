@@ -15,12 +15,7 @@ model Flash "Model of a flash column to separate vapor and liquid phases from a 
     Dialog(tab = "Flash Specifications", group = "Calculation Parameters"));
   //==============================================================================
   //Model Variables
-  Real T(unit = "K", start = Tg, min = 0) "Flash column temperature";
-  Real P(unit = "Pa", start = Pg, min = 0) "Flash column pressure";
-  Real Pbubl(unit = "Pa", min = 0, start = Pmin) "Bubble point pressure";
-  Real Pdew(unit = "Pa", min = 0, start = Pmax) "Dew point pressure";
   Real F_p[3](each unit = "mol/s", each min = 0,start = {Fg,Fliqg,Fvapg})"Feed stream mole flow";
-  Real x_pc[3, Nc](each unit = "-", each min = 0, each max = 1, start={xguess,xg,yg}) "Component mole fraction";
   Real Cp_pc[3, Nc](each unit = "kJ/[kmol.K]") "Component molar specific heat";
   Real H_pc[3, Nc](each unit = "kJ/kmol") "Comopent molar enthalpy";
   Real S_pc[3, Nc](each unit = "kJ/[kmol.K]") "Component molar entropy";
@@ -38,7 +33,7 @@ model Flash "Model of a flash column to separate vapor and liquid phases from a 
   Simulator.Files.Interfaces.matConn Out2(Nc = Nc) annotation(
     Placement(visible = true, transformation(origin = {100, -72}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {100, -80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   
-  extends GuessModels.InitialGuess;
+  extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
   
 equation
 //================================================================================

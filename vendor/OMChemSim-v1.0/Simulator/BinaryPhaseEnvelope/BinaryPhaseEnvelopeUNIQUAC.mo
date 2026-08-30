@@ -14,8 +14,6 @@ package BinaryPhaseEnvelopeUNIQUAC
     input Real R[NOC], Q[NOC];
     input Real tow[NOC, NOC];
     input Real towk[N + 1, NOC, NOC];
-    parameter Real Z = 10 "Compresseblity Factor";
-    parameter Real R_gas = 1.98721 "Gas Constant";
     //Activity coefficients
     output Real gammaBubl1[N + 1], gammaBubl2[N + 1];
   protected
@@ -31,6 +29,8 @@ package BinaryPhaseEnvelopeUNIQUAC
     //Empherical Parameter at different temperatures
     Real toww[N, NOC, NOC];
     //=========================================================================================
+    parameter Real Z = 10 "Compresseblity Factor";
+    parameter Real R_gas = 1.98721 "Gas Constant";
   algorithm
     for i in 1:N + 1 loop
       r_bubl[i] := z1[i] * R[1] + z2[i] * R[2];
@@ -120,7 +120,7 @@ package BinaryPhaseEnvelopeUNIQUAC
     //Vapour Phase Mole Fraction
     Real y1[N + 1](each start = 0.5), y2[N + 1](each start = 0.5);
     //Vapour Pressure at the chosen temperature
-    Real Psat[NOC](unit = "Pa") "Vapour Pressure";
+    Real Psat[NOC](each unit = "Pa") "Vapour Pressure";
     //=========================================================================================
     //Equation Section
   equation
