@@ -31,7 +31,17 @@ within Simulator.Files.ThermodynamicPackages;
     Real Zvap[3](each start = xvapg), Zvv;
     Real sumxvap[Nc];
     Real A, B, Cdummy, D_c[Nc], E, F, G, H_c[Nc], I_c[Nc], J_c[Nc];
-    Real gma[Nc];
+    /* NOT IN UPSTREAM v1.0 (see ATTRIBUTION.md): the A/(B*sqrt(8)) prefactor of
+       each log-fugacity expression, guarded against the absent phase. Outside
+       the two-phase region MaterialStream zeroes one phase's composition, which
+       drives that phase's aM and bM -- and therefore its A and B -- to zero, and
+       the unguarded quotient evaluates 0/0. Symptom: a Peng-Robinson stream
+       solves inside the two-phase envelope and fails with `Iteration variable
+       ... is inf or nan` as soon as it is asked for a subcooled liquid or a
+       superheated vapour. With the prefactor zeroed the absent phase gets a
+       fugacity coefficient of 1, which nothing in that branch reads. */
+    Real lnphiliqfac "Aliq / (Bliq * sqrt(8)) * log(A / B), zero when no liquid is present";
+    Real lnphivapfac "Avap / (Bvap * sqrt(8)) * log(E / F), zero when no vapour is present";
     
     extends Simulator.Files.ThermodynamicPackages.PartialThermoInterface;
   //======================================================================
@@ -42,7 +52,9 @@ within Simulator.Files.ThermodynamicPackages;
       gmabubl_c[i] = 1;
       philiqbubl_c[i] = 1;
       phivapdew_c[i] = 1;
-      gma[i] = 1;
+      // gma_c is declared in PartialThermoInterface; upstream set a local
+      // `gma` here instead, leaving gma_c with no equation (see ATTRIBUTION.md).
+      gma_c[i] = 1;
     end for;
     Cpres_p[:] = zeros(3);
     Hres_p[:] = zeros(3);
@@ -64,7 +76,7 @@ within Simulator.Files.ThermodynamicPackages;
     Cliq[2] = Bliq - 1;
     Cliq[3] = Aliq - 3 * Bliq ^ 2 - 2 * Bliq;
     Cliq[4] = Bliq ^ 3 + Bliq ^ 2 - Aliq * Bliq;
-    Z_RL = Modelica.Math.Vectors.Utilities.roots(Cliq);
+    Z_RL = Modelica.Math.Polynomials.roots(Cliq);
     Zliq = {Z_RL[i, 1] for i in 1:3};
     Zll = min({Zliq});
     sumxliq = {sum({x_pc[2, j] * aij_c[i, j] for j in 1:Nc}) for i in 1:Nc};
@@ -97,7 +109,12 @@ within Simulator.Files.ThermodynamicPackages;
         J_c[i] = sumxliq[i] / aMliq;
       end if;
     end for;
-    philiq_c = exp(Aliq / (Bliq * sqrt(8)) * log(A / B) .* (D_c .- 2 * J_c) .+ (Zll - 1) * D_c .- Cdummy);
+    if Bliq <= 0 then
+      lnphiliqfac = 0;
+    else
+      lnphiliqfac = Aliq / (Bliq * sqrt(8)) * log(A / B);
+    end if;
+    philiq_c = exp(lnphiliqfac .* (D_c .- 2 * J_c) .+ (Zll - 1) * D_c .- Cdummy);
   
   //======================================================================
 //Vapour Fugacity Calculation Routine
@@ -109,11 +126,14 @@ within Simulator.Files.ThermodynamicPackages;
     Cvap[2] = Bvap - 1;
     Cvap[3] = Avap - 3 * Bvap ^ 2 - 2 * Bvap;
     Cvap[4] = Bvap ^ 3 + Bvap ^ 2 - Avap * Bvap;
-    Z_RV = Modelica.Math.Vectors.Utilities.roots(Cvap);
+    Z_RV = Modelica.Math.Polynomials.roots(Cvap);
     Zvap = {Z_RV[i, 1] for i in 1:3};
     Zvv = max({Zvap});
     sumxvap = {sum({x_pc[3, j] * aij_c[i, j] for j in 1:Nc}) for i in 1:Nc};
-    if Zvv + 2.4142135 * Avap <= 0 then
+    // Guard tested Avap upstream while the branch below uses Bvap, so E could
+    // be assigned a negative value and log(E / F) aborted the run
+    // ("Argument of log(E / F) was -0.00694498"). See ATTRIBUTION.md.
+    if Zvv + 2.4142135 * Bvap <= 0 then
       E = 1;
     else
       E = Zvv + 2.4142135 * Bvap;
@@ -142,7 +162,12 @@ within Simulator.Files.ThermodynamicPackages;
         I_c[i] = sumxvap[i] / aMvap;
       end if;
     end for;
-    phivap_c = exp(Avap / (Bvap * sqrt(8)) * log(E / F) .* (H_c .- 2 * I_c) .+ (Zvv - 1) * H_c .- G);
+    if Bvap <= 0 then
+      lnphivapfac = 0;
+    else
+      lnphivapfac = Avap / (Bvap * sqrt(8)) * log(E / F);
+    end if;
+    phivap_c = exp(lnphivapfac .* (H_c .- 2 * I_c) .+ (Zvv - 1) * H_c .- G);
     for i in 1:Nc loop
       if philiq_c[i] == 0 or phivap_c[i] == 0 then
         K_c[i] = 0;

@@ -8,7 +8,7 @@ Licensed under the 3-Clause BSD License (see LICENSE).
 Upstream v1.0 was written against an OpenModelica release whose frontend was
 considerably more permissive than the current one. The patches below are what
 it took to make the library translate and run on **OpenModelica 1.27.0** with
-**MSL 3.2.3**. They fall into a small number of recurring categories, listed
+**MSL 4.1.0**. They fall into a small number of recurring categories, listed
 first so the pattern is visible; verify with `python tools/run_regression.py`.
 
 ---
@@ -241,19 +241,129 @@ These were wrong before; the old frontend just did not object.
   data;` declared the package as a *component* and then used `data.Methanol` as
   a type. Replaced with the `import data = ...` the sibling models use.
 
+### Peng-Robinson
+
+No upstream example exercises `ThermodynamicPackages.PengRobinson` on a material
+stream, so none of the three below had ever been hit. All three surface the
+moment you write `extends MaterialStream; extends PengRobinson;`.
+
+- Every other package writes the interface's activity coefficient `gma_c`;
+  Peng-Robinson declared a *local* `Real gma[Nc]` and set that instead, leaving
+  `gma_c` with no equation at all — `Too few equations, under-determined system.
+  The model has 239 equation(s) and 242 variable(s)`, short by exactly `Nc`.
+  The local array is gone and the equation now writes `gma_c`.
+- The vapour-side guard tested `Zvv + 2.4142135 * Avap <= 0` while the branch it
+  guards computes `Zvv + 2.4142135 * Bvap`. With the wrong variable in the test,
+  `E` could be assigned a negative value and the run aborted on `Model error:
+  Argument of log(E / F) was -0.00694498 should be > 0`. The liquid-side guard
+  a few lines above tests `Bliq`, which is what the vapour side meant.
+- Both fugacity expressions carry a prefactor `A / (B * sqrt(8))`. Outside the
+  two-phase region MaterialStream zeroes one phase's composition, which sends
+  that phase's `aM` and `bM` — and so its `A` and `B` — to zero, and the
+  unguarded quotient evaluates `0/0`. A Peng-Robinson stream would therefore
+  solve inside the two-phase envelope and fail with `Iteration variable
+  ... is inf or nan` the moment it was asked for a subcooled liquid or a
+  superheated vapour. The prefactor is now zeroed when the phase is absent,
+  which leaves that phase a fugacity coefficient of 1 — a value nothing in the
+  single-phase branches reads.
+
+---
+
+## 5. Flash closure: Rachford-Rice instead of `sum(y) = 1`
+
+`Streams/MaterialStream.mo`, two-phase branch. Upstream closed the flash with
+
+```modelica
+sum(x_pc[3, :]) = 1;                    // sum(y) = 1
+```
+
+alongside `y_i = K_i x_i` and `x_i = z_i / (1 + xvap (K_i - 1))`. Substitute and
+that equation reads
+
+```
+sum( z_i K_i / (1 + xvap (K_i - 1)) ) = 1
+```
+
+which at `xvap = 1` collapses to `sum(z_i) = 1` **for any set of K-values
+whatsoever**. So the system always has a second, spurious root at "all vapour"
+sitting next to the physical one, and a solver started away from the answer can
+converge on it. Raoult's law usually starts close enough to miss it.
+Peng-Robinson does not: a propane / n-butane / n-pentane feed at 5 bar and 320 K
+returns `xvap = 1.0` with a liquid composition of `z_i / K_i` — a dew-point
+state, silently reported as a flash.
+
+The closure is now the Rachford-Rice form:
+
+```modelica
+sum(x_pc[3, :]) = sum(x_pc[2, :]);      // sum(y) = sum(x)
+```
+
+The two are equivalent at every genuine solution. From the definitions,
+`xvap * sum(y) + (1 - xvap) * sum(x) = sum(z) = 1` identically, so `sum(y) =
+sum(x)` forces both to 1, and conversely `sum(y) = 1` forces either `sum(x) = 1`
+or `xvap = 1`. Rachford-Rice keeps the first case and rejects the second, unless
+`sum(z_i / K_i) = 1` — which is the definition of an actual dew point. Same
+physical root, one fewer place for the solver to land. The same feed now returns
+`xvap = 0.924`.
+
+`Examples/Absorption` is the exception, and it keeps the old closure via
+`rachfordRice = false` on its four streams. It is the most fragile model in the
+suite — a permanent gas in the mixture, and the one example that needs explicit
+guess anchors to converge at all (see §2) — and on OpenModelica 1.27.0 the new
+closure moves the Newton path enough that it fails at `S4.x_pc[1,2] is inf or
+nan`. The parameter is on `MaterialStream`, defaults to `true`, and exists for
+that one model.
+
+---
+
+## 6. Ported from MSL 3.2.3 to MSL 4.x
+
+Upstream targeted the Modelica Standard Library 3.2.x. Two names it depends on
+were moved in MSL 4.0, and 4.x is what OpenModelica now loads by default, so the
+library was ported rather than left pinned to a version users have to go and
+select by hand.
+
+- `Simulator/package.mo`: `import SI = Modelica.SIunits` and
+  `import Cv = Modelica.SIunits.Conversions` became `Modelica.Units.SI` and
+  `Modelica.Units.Conversions`. Both imports are in fact unused — nothing in the
+  library references `SI.` or `Cv.` — but an unresolvable import is still an
+  error waiting to happen, and leaving them pointing at a package that no longer
+  exists would be misleading.
+- `Modelica.Math.Vectors.Utilities.roots` was removed in MSL 4.0; the same
+  function, with the same signature, is now `Modelica.Math.Polynomials.roots`.
+  Five call sites: `PengRobinson` (2), `GraysonStreed` (2),
+  `BinaryPhaseEnvelopePR` (1). Symptom if this patch is lost:
+
+  ```
+  Function Modelica.Math.Vectors.Utilities.roots not found in scope PengRobinson.
+  ```
+
+Nothing else in the library touches an MSL name that changed: `Modelica.Icons.*`,
+`Modelica.Constants.*`, `Modelica.Math.Nonlinear.quadratureLobatto`,
+`Modelica.Math.BooleanVectors.firstTrueIndex` and `Modelica.Media.Water` are all
+present and unchanged in 4.x.
+
+**The port is one-way.** `Modelica.Math.Polynomials` does not exist in 3.2.3, so
+loading this library against it now fails. That is deliberate — one supported
+configuration is easier to keep working than two.
+
 ---
 
 ## Verifying
 
 ```
-python tools/run_regression.py --check-only   # translate all 36 models
+python tools/run_regression.py --check-only   # translate every model
 python tools/run_regression.py                # translate and simulate
 ```
 
-Both are expected to report `36/36 passed` on OpenModelica 1.27.0 + MSL 3.2.3.
+The harness covers all 35 executable examples in this library plus the
+repository's own models, and both invocations are expected to report every one
+of them passing on OpenModelica 1.27.0 + MSL 4.1.0. Run it before and after
+changing anything here, and diff the two summaries.
 
 ## Known remaining constraint
 
-The library still uses `Modelica.SIunits`, which MSL 4.x renamed to
-`Modelica.Units.SI`, so it must be loaded against MSL 3.2.3. The regression
-harness pins this via `MSL_VERSION`.
+None outstanding. `omc` resolves a requested MSL version as a minimum within a
+major release rather than an exact pin — asking for `{"4.0.0"}` on a machine
+that also has 4.1.0 installed gets you 4.1.0 — so `MSL_VERSION` in the
+regression harness documents the intent more than it enforces it.

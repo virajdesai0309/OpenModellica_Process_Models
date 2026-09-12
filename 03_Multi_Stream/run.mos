@@ -1,0 +1,28 @@
+// Load both libraries and simulate the multi-stream models.
+//
+//   Run this from the REPOSITORY ROOT, not from inside 03_Multi_Stream:
+//
+//       omc 03_Multi_Stream/run.mos
+//
+//   loadFile resolves relative paths against the working directory, and so do
+//   the result files -- they land wherever you started omc.
+
+// Load the Modelica Standard Library BEFORE the process library, or the wrong
+// one is already in memory by the time the library asks for it. 4.1.0 is what
+// omc picks by default, so this line mostly documents the requirement -- but
+// the library genuinely needs 4.x and will not compile against 3.2.3.
+loadModel(Modelica, {"4.1.0"});                        getErrorString();
+
+loadFile("vendor/OMChemSim-v1.0/Simulator/package.mo"); getErrorString();
+loadFile("03_Multi_Stream/MultiStream.mo");             getErrorString();
+
+// One steady-state operating point: both streams solved side by side.
+simulate(MultiStream.TwoStreams,
+         stopTime = 1, numberOfIntervals = 1, outputFormat = "csv");
+getErrorString();
+
+// The same two streams with the operating point walked over simulation time.
+// Interval 0.5 over 100 s gives 200 steady-state solves along the path.
+simulate(MultiStream.StreamSweep,
+         stopTime = 100, numberOfIntervals = 200, outputFormat = "csv");
+getErrorString();

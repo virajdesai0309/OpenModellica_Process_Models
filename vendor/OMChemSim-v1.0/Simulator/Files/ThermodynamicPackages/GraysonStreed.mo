@@ -191,7 +191,7 @@ within Simulator.Files.ThermodynamicPackages;
     Cvapdew[2] := -(1 + Bvapdew - u * Bvapdew);
     Cvapdew[3] := Avapdew - u * Bvapdew - u * Bvapdew ^ 2;
     Cvapdew[4] := -Avapdew * Bvapdew;
-    ZRvapdew := Modelica.Math.Vectors.Utilities.roots(Cvapdew);
+    ZRvapdew := Modelica.Math.Polynomials.roots(Cvapdew);
     ZVapdew := {ZRvapdew[i, 1] for i in 1:3};
     Zvapdew := max({ZVapdew});
   algorithm
@@ -199,7 +199,7 @@ within Simulator.Files.ThermodynamicPackages;
     Cvap[2] := -(1 + Bvap - u * Bvap);
     Cvap[3] := Avap - u * Bvap - u * Bvap ^ 2;
     Cvap[4] := -Avap * Bvap;
-    ZRvap := Modelica.Math.Vectors.Utilities.roots(Cvap);
+    ZRvap := Modelica.Math.Polynomials.roots(Cvap);
     ZVap := {ZRvap[i, 1] for i in 1:3};
     Zvap := max({ZVap});
 //==========================================================================================================

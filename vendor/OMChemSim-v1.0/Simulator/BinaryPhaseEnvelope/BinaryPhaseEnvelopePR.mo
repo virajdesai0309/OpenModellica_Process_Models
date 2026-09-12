@@ -28,7 +28,7 @@ package BinaryPhaseEnvelopePR
     C[2] := B - 1;
     C[3] := A - 3 * B ^ 2 - 2 * B;
     C[4] := B ^ 3 + B ^ 2 - A * B;
-    ZR := Modelica.Math.Vectors.Utilities.roots(C);
+    ZR := Modelica.Math.Polynomials.roots(C);
     Z := {ZR[i, 1] for i in 1:3};
   end CompresseblityFactor;
 

@@ -30,15 +30,15 @@ package Absorption "Example of Simulating an Absorption Column"
     parameter data.Air air;
     parameter data.Water wat;
     parameter data.GeneralProperties C[Nc] = {acet, air, wat};
-    Simulator.Examples.Absorption.MS S1(Nc = Nc, C = C, Tg_user = 325, xg_user = {0, 0, 1}) annotation(
+    Simulator.Examples.Absorption.MS S1(Nc = Nc, C = C, rachfordRice = false, Tg_user = 325, xg_user = {0, 0, 1}) annotation(
       Placement(visible = true, transformation(origin = {-90, 42}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
     Simulator.Examples.Absorption.AbsColumn B1(Nc = Nc, C = C, Nt = 10, Tg_user = 330, xg_user = {0.05, 0.15, 0.80}) annotation(
       Placement(visible = true, transformation(origin = {-20, -6}, extent = {{-16, -16}, {16, 16}}, rotation = 0)));
-    Simulator.Examples.Absorption.MS S3(Nc = Nc, C = C, Tg_user = 330, xg_user = {0.2, 0.5, 0.3}) annotation(
+    Simulator.Examples.Absorption.MS S3(Nc = Nc, C = C, rachfordRice = false, Tg_user = 330, xg_user = {0.2, 0.5, 0.3}) annotation(
       Placement(visible = true, transformation(origin = {52, 80}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-    Simulator.Examples.Absorption.MS S4(Nc = Nc, C = C, Tg_user = 330, xg_user = {0.1, 0.05, 0.85}) annotation(
+    Simulator.Examples.Absorption.MS S4(Nc = Nc, C = C, rachfordRice = false, Tg_user = 330, xg_user = {0.1, 0.05, 0.85}) annotation(
       Placement(visible = true, transformation(origin = {52, -94}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Simulator.Examples.Absorption.MS S2(Nc = Nc, C = C, Tg_user = 335, xg_user = {0.5, 0.5, 0}) annotation(
+  Simulator.Examples.Absorption.MS S2(Nc = Nc, C = C, rachfordRice = false, Tg_user = 335, xg_user = {0.5, 0.5, 0}) annotation(
       Placement(visible = true, transformation(origin = {-88, -54}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   equation
     connect(B1.Out_Bot, S4.In) annotation(

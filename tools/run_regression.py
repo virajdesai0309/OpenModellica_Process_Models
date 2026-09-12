@@ -26,9 +26,12 @@ import tempfile
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIBRARY = os.path.join(REPO, "vendor", "OMChemSim-v1.0", "Simulator", "package.mo")
 
-# OMChemSim was written against Modelica 3.2.x and uses Modelica.SIunits, which
-# MSL 4.x renamed to Modelica.Units.SI. Pin 3.2.3 until the library is ported.
-MSL_VERSION = "3.2.3"
+# The vendored library is ported to MSL 4.x. Note that omc treats this as a
+# minimum rather than an exact pin: asking for "4.0.0" on a machine that also
+# has 4.1.0 installed loads 4.1.0. Asking across a major version is honoured
+# exactly, so "3.2.3" really would load 3.2.3 -- and would then fail, because
+# Modelica.Math.Polynomials does not exist there. See ATTRIBUTION.md section 6.
+MSL_VERSION = "4.1.0"
 
 # Executable examples, i.e. those that extend Modelica.Icons.Example and carry a
 # complete set of specifications. The other classes in Examples/ are partial
@@ -75,6 +78,8 @@ EXAMPLES = [
 # user's own models. Each entry is (extra .mo file to load, class name).
 LOCAL_MODELS = [
     (os.path.join(REPO, "01_Material_Stream", "MyModels.mo"), "MyModels.MyFirstStream"),
+    (os.path.join(REPO, "03_Multi_Stream", "MultiStream.mo"), "MultiStream.TwoStreams"),
+    (os.path.join(REPO, "03_Multi_Stream", "MultiStream.mo"), "MultiStream.StreamSweep"),
 ]
 
 

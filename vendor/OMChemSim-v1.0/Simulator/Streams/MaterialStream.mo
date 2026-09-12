@@ -8,6 +8,13 @@ model MaterialStream "Model representing Material Stream"
   // below) rather than here, because the thermodynamic package mixed in
   // alongside this model reads them and can only resolve names through a
   // shared ancestor. See ATTRIBUTION.md.
+  /* NOT IN UPSTREAM v1.0 (see ATTRIBUTION.md). Selects the flash closure used in
+     the two-phase branch below. Leave it true; it exists so that
+     Examples/Absorption, the one model in the suite that will not converge with
+     the corrected closure on OpenModelica 1.27.0, can ask for the old one. */
+  parameter Boolean rachfordRice = true
+    "Close the two-phase flash with sum(y) = sum(x); false restores upstream's sum(y) = 1";
+
   Real xliq(unit = "-", start = xliqg, min = 0, max = 1) "Liquid Phase mole fraction";
   Real xvap(unit = "-", start = xvapg, min = 0, max = 1) "Vapor Phase mole fraction";
   Real xmliq(unit = "-", start = xliqg, min = 0, max = 1) "Liquid Phase mass fraction";
@@ -116,8 +123,33 @@ equation
       x_pc[3, i] = K_c[i] * x_pc[2, i];
       x_pc[2, i] = x_pc[1, i] ./ (1 + xvap * (K_c[i] - 1));
     end for;
-    sum(x_pc[3, :]) = 1;
-//sum y = 1
+    /* Rachford-Rice closure, sum(y) - sum(x) = 0.
+
+       Upstream closed the flash with sum(y) = 1 instead. With
+       x_i = z_i / (1 + xvap * (K_i - 1)) and y_i = K_i * x_i, that equation is
+       satisfied identically at xvap = 1 for ANY set of K-values -- y_i reduces
+       to z_i whatever the K's are -- so the system has a spurious root at
+       "all vapour" alongside the physical one, and a solver started away from
+       the answer slides into it. Peng-Robinson hits this reliably: a
+       propane/n-butane/n-pentane feed at 5 bar, 320 K returns xvap = 1.0 with
+       a liquid composition of z_i / K_i, which is a dew-point state, not the
+       flash.
+
+       sum(y) = sum(x) picks out the same physical root and rejects the
+       spurious one. The identity xvap * sum(y) + (1 - xvap) * sum(x) = sum(z)
+       = 1 makes the two closures equivalent wherever sum(x) = 1, i.e. at every
+       genuine flash solution, while at xvap = 1 it requires sum(z_i / K_i) = 1
+       -- true only at an actual dew point. See ATTRIBUTION.md.
+
+       rachfordRice = false restores the upstream closure for the one model in
+       the suite that still needs it; the condition is a parameter, so both
+       branches contribute exactly one equation and the surrounding if-equation
+       stays balanced.  */
+    if rachfordRice then
+      sum(x_pc[3, :]) = sum(x_pc[2, :]);
+    else
+      sum(x_pc[3, :]) = 1;
+    end if;
   else
 //above dew point region
     x_pc[2, :] = zeros(Nc);

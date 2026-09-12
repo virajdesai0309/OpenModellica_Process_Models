@@ -1,8 +1,8 @@
 package Simulator "OpenModelica Chemical Simulator (OMChemSim) - Version 1.0"
 
   extends Modelica.Icons.Package;
-  import SI = Modelica.SIunits;
-  import Cv = Modelica.SIunits.Conversions;
+  import SI = Modelica.Units.SI;
+  import Cv = Modelica.Units.Conversions;
 
   annotation(
     Documentation(info = "<html>
