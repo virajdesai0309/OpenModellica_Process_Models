@@ -74,12 +74,22 @@ EXAMPLES = [
     "Simulator.Examples.PFR.PFRSimulation",
 ]
 
+PUMP_MODES = os.path.join(REPO, "04_Pump_Modes", "PumpModes", "package.mo")
+
 # Extra models to cover that live outside the vendored library, e.g. the
 # user's own models. Each entry is (extra .mo file to load, class name).
 LOCAL_MODELS = [
     (os.path.join(REPO, "01_Material_Stream", "MyModels.mo"), "MyModels.MyFirstStream"),
     (os.path.join(REPO, "03_Multi_Stream", "MultiStream.mo"), "MultiStream.TwoStreams"),
     (os.path.join(REPO, "03_Multi_Stream", "MultiStream.mo"), "MultiStream.StreamSweep"),
+    # PumpModes is a structured package: loading its package.mo pulls in the
+    # sibling files listed in package.order. All four models pump the same feed
+    # to the same outlet pressure by four different specifications, so they must
+    # agree -- see 04_Pump_Modes/README.md.
+    (PUMP_MODES, "PumpModes.SpecFlowsheetEquation"),
+    (PUMP_MODES, "PumpModes.SpecOutletPressure"),
+    (PUMP_MODES, "PumpModes.SpecPressureIncrease"),
+    (PUMP_MODES, "PumpModes.SpecPowerRequired"),
 ]
 
 

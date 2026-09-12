@@ -349,6 +349,206 @@ configuration is easier to keep working than two.
 
 ---
 
+## 7. Centrifugal pump: energy balance, NPSH and a density guard
+
+`UnitOperations/CentrifugalPump.mo` translated and simulated cleanly before
+these changes, so nothing here was surfaced by the compiler refusing the model.
+Two of the five were reported by `checkModel`'s unit checker, which the
+mislabelled `Pdel` had been drowning out; the other three came from reading the
+equations against the physics.
+
+Unlike sections 1-6, **two of these change published results.** The shipped
+`Examples.Pump` case (100 mol/s equimolar benzene/toluene, 1 atm rise,
+`Eff = 0.75`) moves as follows:
+
+| Variable | Before | After |
+| --- | --- | --- |
+| `S2.T` (outlet temperature, K) | 300.0672 | 300.0896 |
+| `B1.NPSH` (m) | 9.0786 | 10.8783 |
+| `B1.Pvap` (Pa) | 8909.11 | 8881.16 |
+| `B1.Q` (shaft power, W) | 1327.17 | 1327.17 |
+
+Shaft power is unchanged: upstream computed the total duty correctly and only
+misallocated it.
+
+- **The efficiency loss left the energy balance.** Upstream put the *ideal*
+  head into the fluid and divided only the shaft power by the efficiency:
+
+  ```
+  Hout = Hin + Pdel/rho;   Q = Fin*(Hout - Hin)/Eff;
+  ```
+
+  So the shaft delivered `Fin*Pdel/(rho*Eff)` while the stream gained
+  `Fin*Pdel/rho`, and the difference — friction, which in an adiabatic pump
+  heats the fluid — simply disappeared. On the example that is 332 W of a
+  1327 W duty. The outlet temperature was therefore the isentropic one, and the
+  temperature rise was understated by exactly `(1 - Eff)` for every pump at
+  every condition. Now `Hout = Hin + Pdel/(rho*Eff)` and `Q = Fin*(Hout - Hin)`.
+
+- **NPSH was not a head.** Declared `unit = "m"` but computed as
+  `(Pin - Pvap)/rho` with `rho` molar, i.e. J/mol — `checkModel` flags the
+  equation as INCONSISTENT without being asked. NPSH available is
+  `(Pin - Pvap)/(rho_mass*g)`. The old form was not even a fixed factor out,
+  because the discrepancy `rho_mass*g/rho_molar` scales with molecular weight,
+  so it was wrong by a different amount for every mixture. Two variables were
+  added to support it, `MWavg` and `rhoMass`.
+
+- **The vapour pressure in NPSH was evaluated at `Tout`.** Cavitation is a
+  suction-side phenomenon and needs the vapour pressure at the inlet. Using
+  `Tout` also tied NPSH to the outlet temperature, which this model cannot
+  compute on its own — it carries no H-T relation (unlike `AdiabaticCompressor`,
+  which `extends Files.Models.Flash`) and closes only through the material
+  stream attached downstream. `checkModel` on a flowsheet with the outlet stream
+  removed reports 156 equations against 163 variables. So NPSH was unavailable
+  until an outlet stream existed, for no reason. Now evaluated at `Tin`.
+
+- **`Pdel` carried `unit = "K"`**, copied from the `Tdel` declaration above it.
+  Harmless numerically, but it made `Pin + Pdel = Pout` report as INCONSISTENT
+  and buried the two real unit faults above in the noise. Now `Pa`.
+
+- **`rho` and `rho_c` carried `unit = "kmol/m3"` but hold mol/m3.**
+  `ThermodynamicFunctions.Dens` multiplies the Chemsep coefficients by 1000, so
+  benzene/toluene at 300 K comes back as 10179.5, not 10.18. The arithmetic was
+  always right — it is precisely what makes `Pdel/rho` land in J/mol to match
+  the library's enthalpies — but the label invited exactly the wrong conclusion.
+  Relabelled; no numerical change.
+
+- **`ThermodynamicFunctions.Dens` returned 0.0 for compounds it cannot
+  correlate.** The function handles DIPPR forms 105 and 106 and had no `else`,
+  so an unrecognised form left the output unassigned. Every caller divides by
+  the result — the pump's `rho = 1/sum(x./rho_c)`, and the liquid-volume terms
+  in `NRTL` and `UNIQUAC` — so the symptom was a division by zero a long way
+  from the cause. Of the 431 compounds in the bundled database, 422 use form
+  105, one uses 106, and **eight carry `LiqDen = {0, 0, 0, 0, 0, 0}`** and have
+  no correlation at all: DiButyl-, DiEthyl-, DiPhenyl-, EthylPhenyl-,
+  MethylEthyl- and MethylPhenylCarbonate, TwoMethoxyTwoMethylHeptane and
+  TwoMethylTwoHeptanol. The `else` branch now asserts, naming the form.
+
+`AdiabaticCompressor` and `AdiabaticExpander` share the pump's
+`Hout = Hin + (H_p[1] - Hin)/Eff` shape but apply the efficiency to the fluid
+enthalpy directly, so they do not have the first fault. They have not been
+otherwise reviewed.
+
+---
+
+## 8. Calculation-mode selector (`Files/Types/`, six unit operations)
+
+Upstream leaves each unit operation one degree of freedom short and expects the
+flowsheet to close it with a hand-written equation. For the pump:
+
+```
+B1.Pdel = 101325;
+```
+
+It works, but it is invisible in OMEdit. A user who drags a pump onto the canvas
+and opens its dialog is offered the efficiency and nothing else, and gets `Too
+few equations, under-determined system` unless they already know that a duty
+equation has to be typed somewhere else. `CentrifugalPump` now also offers the
+three closures as parameters, so the choice is made on the block:
+
+| `spec` | Closing equation | Field |
+| --- | --- | --- |
+| `FlowsheetEquation` *(default)* | *none* | — |
+| `OutletPressure` | `Pout = Pout_spec` | `Pout_spec` |
+| `PressureIncrease` | `Pdel = Pdel_spec` | `Pdel_spec` |
+| `PowerRequired` | `Q = Q_spec` | `Q_spec` |
+
+**The default emits no equation, so nothing that already works changes.** Had it
+emitted one, every existing flowsheet that specifies the duty in its equation
+section — `Examples.Pump` included — would have become over-determined. This is
+also why the enumeration carries a `FlowsheetEquation` member at all: a mode
+that means "this model contributes nothing" has to be nameable.
+
+Differing equation counts across the branches of the `if` are legal because
+`spec` is a parameter, so the branch is selected before balance checking — the
+same mechanism `DistTray.mo` relies on (section 4) and `MaterialStream.mo`'s
+`rachfordRice` (section 5).
+
+The enumerations live in a leaf package, `Simulator.Files.Types`, rather than
+nested inside each unit operation. One enumeration per unit operation, since the
+available closures differ:
+
+| Unit operation | Enumeration | Modes besides `FlowsheetEquation` |
+| --- | --- | --- |
+| `CentrifugalPump` | `PumpSpec` | `OutletPressure`, `PressureIncrease`, `PowerRequired` |
+| `AdiabaticCompressor` | `CompressorSpec` | `OutletPressure`, `PressureIncrease`, `PowerRequired` |
+| `AdiabaticExpander` | `ExpanderSpec` | `OutletPressure`, `PressureDrop`, `ShaftPower` |
+| `Valve` | `ValveSpec` | `OutletPressure`, `PressureDrop` |
+| `Heater` | `HeaterSpec` | `OutletTemperature`, `TemperatureIncrease`, `HeatAdded`, `OutletVaporFraction` |
+| `Cooler` | `CoolerSpec` | `OutletTemperature`, `TemperatureDrop`, `HeatRemoved`, `OutletVaporFraction` |
+
+Each mode contributes exactly one equation, assigning the model's own variable
+from the matching `_spec` parameter: `Pout = Pout_spec`, `Tdel = Tdel_spec`,
+`xvapout = xvapout_spec`, and so on. No mode applies a sign flip or a unit
+conversion, so what is typed into the dialog is what appears in the results.
+
+Three points where the conventions differ between units, all inherited from
+upstream and all preserved rather than normalised:
+
+- **Heater and Cooler have no pressure mode.** Their `Pdel` is already a
+  `parameter` (the pressure drop across the exchanger), so the only degree of
+  freedom left is the thermal duty.
+- **The cooler's positive direction is removal.** It carries
+  `Hin - Eff*Q/Fin = Hout` and `Tin - Tdel = Tout`, so a positive `Q_spec` is
+  heat removed and a positive `Tdel_spec` is a temperature drop. The heater is
+  the mirror image. Hence `HeatAdded` versus `HeatRemoved`, and
+  `TemperatureIncrease` versus `TemperatureDrop`, rather than one shared name.
+- **The expander's shaft power is negative.** It writes
+  `Q = Fin*(H_p[1] - Hin)*Eff` and the stream gives up enthalpy, so `Q` comes
+  out negative: the shipped example returns -12387.9 W. `ShaftPower` sets
+  `Q = Q_spec` directly, so `Q_spec` must be given negative. The alternative --
+  flipping the sign inside the mode -- would make the dialog disagree with the
+  results variable of the same name, which seemed the worse trap.
+
+`Valve` gained the only other thing it needed: it had no parameters at all
+before, so it now has a `Valve Specifications` dialog tab that did not exist.
+
+Verified by harvesting the converged state of each shipped example, then
+re-running the same flowsheet once per mode with the `_spec` parameter set to
+the harvested value. All **16 modes across the five units** reproduce their
+reference to 2.2e-13 relative, including both vapour-fraction modes -- the
+heater and cooler outlets are genuinely two-phase at their example conditions
+(vapour fractions 0.434 and 0.267), so `OutletVaporFraction` is exercised rather
+than trivially satisfied.
+
+While converting `AdiabaticCompressor`, one further upstream unit label turned
+up and was corrected in passing: `Tout` carried `unit = "Pa"`, copied from the
+`Pout` declaration above it, which made `checkModel` report
+`Tin + Tdel = Tout` as INCONSISTENT. Same fault and same fix as
+`Pdel(unit = "K")` in the pump (section 7); no numerical change.
+
+**Still outstanding, not fixed here.** `checkModel` reports two further unit
+inconsistencies that predate this work and live in shared code rather than in
+the unit operations:
+
+- `ThermodynamicFunctions/VapCpId.mo` declares its output `unit = "J/mol.K"`.
+  In Modelica unit syntax `.` is multiplication, so that parses as
+  (J/mol)*K rather than J/(mol*K); it wants `"J/(mol.K)"`.
+- `ThermodynamicFunctions/LiqCpId.mo` declares its output `unit = "J/mol"`,
+  omitting the per-kelvin entirely.
+
+Both are label-only and change nothing numerically, but they are read by every
+caller of those functions, so correcting them belongs in its own pass rather
+than buried in this one.
+
+Two details worth keeping if this is edited:
+
+- The enumeration is referenced by its **fully qualified name** inside the
+  `Dialog(enable = ...)` annotations. Those expressions are evaluated by
+  OMEdit's dialog builder rather than by the compiler, so an `import` alias
+  cannot be relied on to be in scope there.
+- `Pout_spec` and `Pdel_spec` carry `displayUnit = "bar"`, `Q_spec` carries
+  `displayUnit = "kW"`. The stored values stay strictly SI; only the dialog
+  converts.
+
+For the pump specifically, verified by simulating the same feed (100 mol/s equimolar benzene/toluene at
+101325 Pa, 300 K, `Eff = 0.75`) through all four modes — the flowsheet equation,
+a specified `Pdel` of 101325 Pa, a specified `Pout` of 202650 Pa, and a
+specified shaft power of 1327.175 W. All four return `Pdel` = 101325 Pa,
+`S2.T` = 300.0896 K and `NPSH` = 10.8783 m, agreeing to 1.7e-13 relative. The
+power-specified case is the useful one: it inverts the energy balance corrected
+in section 7 and recovers the pressure rise the other three were given.
+
 ## Verifying
 
 ```
