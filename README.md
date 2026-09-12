@@ -5,7 +5,8 @@
 **A learn-in-public guide series on open-source process simulation — with every model I build along the way.**
 
 [![Guides](https://img.shields.io/badge/guides-2%20published-blue.svg)](#-guide-series)
-[![Stage](https://img.shields.io/badge/stage-02%20Material%20Stream%20Modelling-informational.svg)](#-where-this-project-is-right-now)
+[![Models](https://img.shields.io/badge/models-4%20companion-blueviolet.svg)](#-project-structure)
+[![Next](https://img.shields.io/badge/next-04%20Pumps%2C%20Heaters%20%26%20Compressors-informational.svg)](#next-up--unit-operations)
 [![Modelica](https://img.shields.io/badge/Modelica-4.1.0-9cf.svg)](https://modelica.org/)
 [![OpenModelica](https://img.shields.io/badge/OpenModelica-1.27.0-orange.svg)](https://openmodelica.org/)
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -26,7 +27,7 @@ This repository is **a process engineer learning that tool properly, in public**
 - **🧪 A companion model repository** — every model discussed in the guides, in a numbered folder, so you can open the exact file rather than retype it from a screenshot.
 
 > [!NOTE]
-> **This is an active learning journey, not a finished product.** Guide 00 is published; Guide 01's models all run and the write-up is in progress. See [Where This Project Is Right Now](#-where-this-project-is-right-now) for an honest status of every stage. Everything here is for **educational use** — these are teaching models, not validated industrial ones.
+> **This is an active learning journey, not a finished product.** Guides 00 and 01 are published, and the models behind them run. What comes next is unit operations — a pump system, heaters and coolers, compressors and expanders — bolted onto the streams that now solve. See [Where This Project Is Right Now](#-where-this-project-is-right-now) for an honest status of every stage. Everything here is for **educational use** — these are teaching models, not validated industrial ones.
 
 ### ✨ What you get today
 
@@ -35,6 +36,7 @@ This repository is **a process engineer learning that tool properly, in public**
 - **A screenshot-by-screenshot OMEdit walkthrough** of a first model, from blank canvas to plotted result.
 - **Material streams that actually solve** — a hydrocarbon flash on Peng-Robinson and a water stream on the IAPWS-IF97 steam tables, in the same model, with a patched process library behind them and notes on every patch.
 - **A parametric-study harness** that compiles once and sweeps a grid of operating points, so a design of experiments over a stream costs seconds rather than an afternoon.
+- **Written-down sharp edges** — [MODELLING_GUIDE.md](MODELLING_GUIDE.md) for building your own models on the patched library, and [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md) for every patch and the exact error it fixes. Both are listed in the [Documentation Map](#-documentation-map).
 - **A commitment to keep going** — the roadmap below is what is actually being worked on next, not a wish list.
 
 ---
@@ -44,6 +46,7 @@ This repository is **a process engineer learning that tool properly, in public**
 - [Description](#-description)
 - [Where This Project Is Right Now](#-where-this-project-is-right-now)
 - [Guide Series](#-guide-series)
+- [Documentation Map](#-documentation-map)
 - [Installation & Setup](#️-installation--setup)
 - [Usage](#-usage)
 - [Project Structure](#-project-structure)
@@ -64,19 +67,26 @@ Learning a simulation tool is a staircase, not a leap. Here is exactly which ste
 | **00** | **Getting started** — what OpenModelica is, installation on Windows / Linux / macOS, OMEdit tour, verifying the install | ✅ **Published** |
 | **01** | **Modelica language basics** — data types, model structure, packages, writing and simulating a first model, exporting results to CSV | ✅ **Published** |
 | **02** | **Material stream modelling** — three things that only make sense together: drawing a **custom icon** and taking a model through the full OMEdit workflow, **loading an external process library** and getting it to compile, and then building an actual **material stream** on top of it — one stream, several streams in one model, two property methods side by side, and a parametric study over the lot | ✅ **Published** |
-| **03** | **Thermodynamic packages** — property methods, when each one applies, and what happens when you pick the wrong one | 📋 **Planned** |
-| **04** | **Unit operations** — mixers, splitters, heaters, coolers, valves, pumps | 📋 **Planned** |
-| **05** | **Separation** — flash drums, distillation and absorption columns | 📋 **Planned** |
-| **06** | **Reactors** — conversion, equilibrium, CSTR, PFR | 📋 **Planned** |
-| **07** | **Flowsheeting** — connecting unit operations into a full process, recycle loops, convergence | 📋 **Planned** |
-| **08** | **OMPython & automation** — driving simulations from Python, toward digital twins and real-time optimisation | 💡 **Idea** |
+| **03** | **Thermodynamic packages** — Raoult, Peng-Robinson, Grayson-Streed, NRTL, UNIQUAC, UNIFAC: when each one applies, and what happens when you pick the wrong one | 📋 **Planned** |
+| **04** | **Unit operations I — pressure changers** — a **pump system** first: head, efficiency, power draw and a pump curve swept over flow; then **valves** and the isenthalpic pressure drop across them | 📌 **Next up** |
+| **05** | **Unit operations II — heat transfer** — **heater and cooler models** on a duty specification and on an outlet-temperature specification, then a two-sided **heat exchanger** coupled through an energy stream | 📋 **Planned** |
+| **06** | **Unit operations III — compression & expansion** — **adiabatic compressors** and expanders, isentropic efficiency, discharge temperature, and why the property package matters more here than anywhere else | 📋 **Planned** |
+| **07** | **Mixing & splitting** — mixers and splitters, and the first models where two streams have to agree on a composition | 📋 **Planned** |
+| **08** | **Separation** — flash drums, distillation and absorption columns | 📋 **Planned** |
+| **09** | **Reactors** — conversion, equilibrium, CSTR, PFR | 📋 **Planned** |
+| **10** | **Flowsheeting** — connecting unit operations into a full process, recycle loops, convergence | 📋 **Planned** |
+| **11** | **OMPython & automation** — driving simulations from Python, toward digital twins and real-time optimisation | 💡 **Idea** |
 
-**Legend** — ✅ Published · 🟢 Built, being written up · 🚧 In progress · 📋 Planned · 💡 Idea
+**Legend** — ✅ Published · 📌 Next up · 🟢 Built, being written up · 🚧 In progress · 📋 Planned · 💡 Idea
+
+> 📌 **Why stage 04 and not stage 03?** Stage 03 is a *write-up* — the property-method comparison it needs already exists in [03_Multi_Stream/](03_Multi_Stream/). Stage 04 is new *modelling*, and modelling is the slower half, so it starts now and the thermodynamics guide is written alongside it.
 
 > [!IMPORTANT]
-> **In practical terms:** stages 00 and 01 are published and stage 02 now *runs* — [03_Multi_Stream/](03_Multi_Stream/) holds a model with a Peng-Robinson hydrocarbon stream and a steam-table water stream in it, and [tools/run_doe.py](tools/run_doe.py) sweeps a grid of operating points over them. What is missing is the **write-up**, not the code. Everything from stage 03 on — real unit operations, columns, reactors — is still ahead.
+> **In practical terms:** stages 00, 01 and 02 are done — published as PDFs, with models that run. [03_Multi_Stream/](03_Multi_Stream/) holds a Peng-Robinson hydrocarbon stream and a steam-table water stream in one model, and [tools/run_doe.py](tools/run_doe.py) sweeps a grid of operating points over them.
 >
-> Stage 02 required patching the vendored library in [vendor/](vendor/); those changes are recorded in [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md) and checked by [tools/run_regression.py](tools/run_regression.py). Read [MODELLING_GUIDE.md](MODELLING_GUIDE.md) before building on it — the library has sharp edges, and that file is where they are written down.
+> **The line is drawn after streams.** Everything from stage 04 on — pumps, heaters and coolers, compressors, columns, reactors — is still ahead. The blocks for them already sit in the vendored library ([`Simulator.UnitOperations`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/)); what has not been done is connecting them to streams that solve, checking the numbers, and writing it up. That work is next — see [Next up — unit operations](#next-up--unit-operations).
+>
+> Getting this far required patching the vendored library in [vendor/](vendor/); those changes are recorded in [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md) and checked by [tools/run_regression.py](tools/run_regression.py). Read [MODELLING_GUIDE.md](MODELLING_GUIDE.md) before building on it — the library has sharp edges, and that file is where they are written down.
 
 ---
 
@@ -87,12 +97,14 @@ Guides live in [docs/](docs/), each published in two formats: an editable source
 | # | Guide | Level | Version | Status | Read |
 | :---: | --- | --- | :---: | :---: | --- |
 | **00** | Introduction to OpenModelica for Process Engineers | Beginner | `0.00` | ✅ Published | [📄 PDF](docs/01%20PDFs/00%20OpenModellica%20for%20Process%20Simulations.pdf) · [📝 DOCX](docs/00%20Docs/00%20OpenModellica%20for%20Process%20Simulations.docx) |
-| **01** | Material Stream Modelling in OpenModelica | Intermediate | — | 🚧 Being written | [📝 DOCX](docs/00%20Docs/01%20Material%20Stream%20Modelling%20in%20OpenModellica.docx) |
+| **01** | Material Stream Modelling in OpenModelica | Intermediate | `0.00` | ✅ Published | [📄 PDF](docs/01%20PDFs/01%20Material%20Stream%20Modelling%20in%20OpenModellica.pdf) · [📝 DOCX](docs/00%20Docs/01%20Material%20Stream%20Modelling%20in%20OpenModellica.docx) |
 | **02** | Thermodynamic Packages for Process Engineers | Intermediate | — | 📋 Planned | — |
-| **03** | Unit Operations I — Mixers, Splitters, Heaters, Valves | Intermediate | — | 📋 Planned | — |
-| **04** | Unit Operations II — Flash, Columns, Reactors | Advanced | — | 📋 Planned | — |
+| **03** | Unit Operations I — Pumps, Pump Curves and Valves | Intermediate | — | 📌 Next up | — |
+| **04** | Unit Operations II — Heaters, Coolers and Heat Exchangers | Intermediate | — | 📋 Planned | — |
+| **05** | Unit Operations III — Compressors and Expanders | Intermediate | — | 📋 Planned | — |
+| **06** | Unit Operations IV — Mixers, Splitters, Flash, Columns, Reactors | Advanced | — | 📋 Planned | — |
 
-> 📌 **Guide 01 absorbed what used to be planned as two separate guides.** Custom icons and library loading were each going to get their own instalment, but neither stands on its own: you draw an icon so a stream has something to look like on the canvas, and you load a library so the stream has thermodynamics behind it. Both only pay off at the moment a material stream actually solves, so all three now ship together.
+> 📌 **Guide 01 absorbed what used to be planned as two separate guides.** Loading an external process library and building a material stream were each going to get their own instalment, but neither stands on its own: you load a library so the stream has thermodynamics behind it, and the loading only pays off at the moment a stream actually solves. They ship together, with a troubleshooting chapter between them, because that is the order you hit them in. The custom-icon side of the OMEdit workflow is covered separately in [00 Example_One/Modeling_Process.md](00%20Example_One/Modeling_Process.md).
 
 ### Inside Guide 00
 
@@ -106,6 +118,22 @@ Guides live in [docs/](docs/), each published in two formats: an editable source
 5. **Creating and writing a model file** — a simple time-based code block, packages and modules, running and visualising it
 6. **Exporting simulation data** — a deep dive using `SimpleRamp`: where the output files live, graphical plot export, and CSV export
 7. **References and source code**
+
+</details>
+
+### Inside Guide 01
+
+<details>
+<summary><b>Click to expand the table of contents</b></summary>
+
+1. **What is OMChemSim?** — what it is, what it can model, its licence and attribution, and why this guide uses a patched copy
+2. **Importing the Simulator package** — locating it, loading it in OMEdit, setting up your own workspace model, verifying the import
+3. **The key building blocks** — `Streams.MaterialStream`, `Files.ChemsepDatabase`, `Files.ThermodynamicPackages`, `Files.Interfaces.matConn`, `GuessModels`, `UnitOperations`
+4. **Building a process model from scratch** — choosing a system, writing `MyFirstStream.mo`, a line-by-line explanation, and Check Model
+5. **Troubleshooting: reading OpenModelica errors** — why errors are normal here, how to read a translation error, the six you will actually hit (broken imports, `model` vs `record` mismatch, missing `partial`, cross-class scoping, missing `each`, nonlinear initialisation), and how to tell a library fault from your own
+6. **Declaring other streams in the same model** — composites that join a stream to a property package, a Peng-Robinson hydrocarbon stream, an IAPWS-IF97 water stream, unit mismatches between libraries, reference-state cautions, running both side by side, and walking the operating point over simulated time
+7. **Results generation and exporting plots** — output files, graphical export, CSV export, and what is actually worth looking at for a material stream
+8. **References and source code**
 
 </details>
 
@@ -128,6 +156,25 @@ To publish the next one:
 5. Add the companion model in a numbered folder (`03_My_Model/`) and link it from the guide.
 
 > 💡 Every guide carries its own `Version` field on the title page. Bump that when you revise a published guide, and update its row in the table — readers can then tell a fresh revision from a stale download.
+
+---
+
+## 📚 Documentation Map
+
+Not everything worth reading is a guide. This is every document in the repository, and when to open it.
+
+| Document | What it is | When you need it |
+| --- | --- | --- |
+| [Guide 00 — Introduction to OpenModelica](docs/01%20PDFs/00%20OpenModellica%20for%20Process%20Simulations.pdf) | Install, OMEdit tour, language basics, first model, CSV export | Starting from zero |
+| [Guide 01 — Material Stream Modelling](docs/01%20PDFs/01%20Material%20Stream%20Modelling%20in%20OpenModellica.pdf) | Loading OMChemSim, the building blocks, a stream from scratch, troubleshooting, two property methods in one model | Your first model with real thermodynamics in it |
+| [MODELLING_GUIDE.md](MODELLING_GUIDE.md) | Working notes for building on the patched library: load order, composites, specifying a stream, the property packages, convergence, parametric studies, surviving an OpenModelica upgrade, reading its errors | Writing your own `.mo` against `vendor/` |
+| [vendor/…/ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md) | Every patch applied to OMChemSim and the exact error it fixes — name resolution, rewritten initial guesses, strict-Modelica fixes, upstream bugs, Rachford-Rice flash closure, the MSL 3.2.3 → 4.x port | Something in the library behaves differently from upstream |
+| [03_Multi_Stream/README.md](03_Multi_Stream/README.md) | Walkthrough of the two-property-method model: why two libraries at once, how to run it, what comes out, and how to sweep it | Running or extending the multi-stream model |
+| [00 Example_One/Modeling_Process.md](00%20Example_One/Modeling_Process.md) | The OMEdit workflow narrated over 13 screenshots — custom icon, check, translate, simulate, plot | Learning the tool's UI rather than the physics |
+| [structure.txt](structure.txt) | A flat listing of the vendored library's contents | Hunting for a class name inside OMChemSim |
+| [LICENSE](LICENSE) | BSD 3-Clause plus third-party notices | Reusing any of this |
+
+> 📘 **Guides are the narrative; `MODELLING_GUIDE.md` is the reference.** A guide teaches one topic in order, once. The modelling guide is the file to keep open while you work — it is updated whenever something new turns out to bite.
 
 ---
 
@@ -311,9 +358,11 @@ OpenModellica_Process_Models/
 │
 ├── docs/                              # 📘 The guide series
 │   ├── 00 Docs/                       #   Editable sources (.docx)
-│   │   └── 00 OpenModellica for Process Simulations.docx
+│   │   ├── 00 OpenModellica for Process Simulations.docx
+│   │   └── 01 Material Stream Modelling in OpenModellica.docx
 │   └── 01 PDFs/                       #   Exported PDFs for readers
-│       └── 00 OpenModellica for Process Simulations.pdf
+│       ├── 00 OpenModellica for Process Simulations.pdf
+│       └── 01 Material Stream Modelling in OpenModellica.pdf
 │
 ├── 00 Example_One/                    # 🧪 Companion model: the OMEdit workflow
 │   ├── Example_One.mo                 #   Custom icon + first-order decay
@@ -340,8 +389,13 @@ OpenModellica_Process_Models/
 │
 ├── vendor/                            # 📦 Third-party libraries, patched
 │   └── OMChemSim-v1.0/                #   OMChemSim (FOSSEE, IIT Bombay) — BSD-3
+│       ├── ATTRIBUTION.md             #   Every patch, and the error it fixes
+│       ├── Fixes/                     #   Scripts used to apply the bulk patches
+│       └── Simulator/                 #   Streams, UnitOperations, ThermodynamicPackages,
+│                                      #   ChemsepDatabase, GuessModels, Examples
 │
 ├── MODELLING_GUIDE.md                 # 📐 How to build models against the patched library
+├── structure.txt                      # Flat listing of the vendored library
 ├── pyproject.toml                     # Python project metadata (3.12+)
 ├── main.py                            # Python entry point stub
 ├── LICENSE                            # BSD 3-Clause + third-party notices
@@ -358,7 +412,8 @@ OpenModellica_Process_Models/
 | **[01_Material_Stream/](01_Material_Stream/)** | The smallest real process stream: ethanol/water, Raoult's law, TP flash. Needs OMChemSim loaded first — see [MODELLING_GUIDE.md](MODELLING_GUIDE.md). |
 | **[03_Multi_Stream/](03_Multi_Stream/)** | Two streams in one model on two different property methods, plus the sweep and grid studies over them. Has its own [README](03_Multi_Stream/README.md). |
 | **[tools/](tools/)** | `run_regression.py` recompiles every model in the vendored library so an OpenModelica upgrade cannot break it quietly; `run_doe.py` runs a factorial parameter study off a single compile. |
-| **[vendor/](vendor/)** | Third-party libraries kept separate from original work. A **modified** OMChemSim — every patch and the error it fixes is recorded in [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md), and its licence and attribution are preserved in place. |
+| **[vendor/](vendor/)** | Third-party libraries kept separate from original work. A **modified** OMChemSim — every patch and the error it fixes is recorded in [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md), and its licence and attribution are preserved in place. Its `Simulator/UnitOperations/` is where the pump, heater, cooler, compressor and expander blocks live, waiting to be wired up. |
+| **[MODELLING_GUIDE.md](MODELLING_GUIDE.md)** | The reference to keep open while modelling: load order, composites, convergence, parametric studies, upgrade checks, and how to read the library's errors. Listed with everything else in the [Documentation Map](#-documentation-map). |
 
 > 📐 **Convention:** each companion model gets its own `NN_Name/` folder, numbered in the order it appears in the guides, holding the `.mo` file plus any results or notes that belong with it.
 
@@ -366,20 +421,39 @@ OpenModellica_Process_Models/
 
 ## 🗺️ Roadmap
 
-**Near term — finishing what is started**
+**Done**
 
 - [x] Get an external process library compiling reliably against OpenModelica 1.27.0
 - [x] A material stream that solves — one stream, then several in one model, on two different property methods
 - [x] A parametric study over those streams that does not recompile per point
-- [ ] **Guide 01: Material stream modelling** — write up custom icons, library loading and the streams above, with screenshots
-- [ ] Widen the operating envelope: the Peng-Robinson flash is solid inside the two-phase region and above it, and does not converge below the bubble point — see [03_Multi_Stream/README.md](03_Multi_Stream/README.md)
+- [x] **Guide 00: Introduction to OpenModelica** — published as a PDF
+- [x] **Guide 01: Material stream modelling** — published as a PDF, including the troubleshooting chapter
+- [x] Write down the library's sharp edges in [MODELLING_GUIDE.md](MODELLING_GUIDE.md) and every patch in [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md)
+
+### Next up — unit operations
+
+A stream that solves is only interesting once something happens to it. The blocks below already exist in the vendored library; what is missing is a worked model for each one, sitting on streams that converge, with the numbers checked and a sweep over the interesting parameter. **That is the next block of work, in this order.**
+
+| # | Model | Built on | What it will show |
+| :---: | --- | --- | --- |
+| **1** | **Pump system** | [`CentrifugalPump`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/CentrifugalPump.mo) | Pressure rise across a pump, efficiency and shaft power, and a **pump curve** generated by sweeping flow with [tools/run_doe.py](tools/run_doe.py) rather than by hand |
+| **2** | **Heater and cooler** | [`Heater`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/Heater.mo) · [`Cooler`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/Cooler.mo) | The same block specified two ways — fix the duty and let the outlet temperature fall out, or fix the outlet temperature and solve for duty — plus what happens when heating walks a stream across its bubble point |
+| **3** | **Compressor and expander** | [`AdiabaticCompressor`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/AdiabaticCompressor.mo) · [`AdiabaticExpander`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/AdiabaticExpander.mo) | Isentropic efficiency, discharge temperature, power — and why the choice of property package shows up harder here than anywhere upstream of it |
+| **4** | **Valve** | [`Valve`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/Valve.mo) | Isenthalpic pressure drop and the Joule-Thomson temperature change across it — the cheapest unit operation to model and the easiest to get wrong |
+| **5** | **Heat exchanger** | [`HeatExchanger`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/HeatExchanger.mo) | Two streams coupled through an [`EnergyStream`](vendor/OMChemSim-v1.0/Simulator/Streams/EnergyStream.mo) — the first model where one stream's solution depends on another's |
+| **6** | **Mixer and splitter** | [`Mixer`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/Mixer.mo) · [`Splitter`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/Splitter.mo) | Combining and dividing streams, and the first place two streams must agree on a composition |
+
+Each gets its own numbered folder, a `run.mos` that loads and simulates it from the command line, and a row in the regression suite.
 
 **Medium term — process engineering proper**
 
 - [ ] **Guide 02: Thermodynamic packages** — which property method to use, and what breaks when you choose wrong; the Peng-Robinson vs Raoult vs steam-table comparison in `03_Multi_Stream` is the seed of it
-- [ ] **Guide 03: Unit operations I** — mixers, splitters, heaters, coolers, valves, pumps, tested one at a time
-- [ ] **Guide 04: Unit operations II** — flash drums, distillation and absorption columns, reactors
-- [ ] Flowsheeting: connecting unit operations, recycle loops, and getting them to converge
+- [ ] **Guide 03: Unit operations I** — the pump system and valves, written up with screenshots
+- [ ] **Guide 04: Unit operations II** — heaters, coolers and heat exchangers
+- [ ] **Guide 05: Unit operations III** — compressors and expanders
+- [ ] **Guide 06: Unit operations IV** — mixers, splitters, flash drums, distillation and absorption columns, reactors
+- [ ] Flowsheeting: connecting unit operations, recycle loops (the library ships a [`RecycleBlock`](vendor/OMChemSim-v1.0/Simulator/UnitOperations/RecycleBlock.mo)), and getting them to converge
+- [ ] Widen the operating envelope: the Peng-Robinson flash is solid inside the two-phase region and above it, and does not converge below the bubble point — see [03_Multi_Stream/README.md](03_Multi_Stream/README.md)
 
 **Longer term**
 
@@ -432,14 +506,21 @@ This is a learning journey published in the open, and feedback is genuinely welc
 
 ### Suggested reading
 
-6. Fritzson, P. — *Principles of Object-Oriented Modeling and Simulation with Modelica 3.3: A Cyber-Physical Approach*, Wiley-IEEE Press, 2014.
-7. Poling, B. E., Prausnitz, J. M., O'Connell, J. P. — *The Properties of Gases and Liquids*, 5th ed., McGraw-Hill, 2001.
-8. Smith, J. M., Van Ness, H. C., Abbott, M. M. — *Introduction to Chemical Engineering Thermodynamics*, 8th ed., McGraw-Hill, 2018.
+8. Fritzson, P. — *Principles of Object-Oriented Modeling and Simulation with Modelica 3.3: A Cyber-Physical Approach*, Wiley-IEEE Press, 2014.
+9. Poling, B. E., Prausnitz, J. M., O'Connell, J. P. — *The Properties of Gases and Liquids*, 5th ed., McGraw-Hill, 2001.
+10. Smith, J. M., Van Ness, H. C., Abbott, M. M. — *Introduction to Chemical Engineering Thermodynamics*, 8th ed., McGraw-Hill, 2018.
+11. Green, D. W., Southard, M. Z. — *Perry's Chemical Engineers' Handbook*, 9th ed., McGraw-Hill, 2018. The reference behind the pump, compressor and heat-exchanger models coming next.
 
 ### Documentation in this repository
 
-9. **Guide 00 — Introduction to OpenModelica for Process Engineers** — [PDF](docs/01%20PDFs/00%20OpenModellica%20for%20Process%20Simulations.pdf)
-10. **Example One — Modelling Process walkthrough** — [Modeling_Process.md](00%20Example_One/Modeling_Process.md)
+See the [Documentation Map](#-documentation-map) for what each one is for.
+
+12. **Guide 00 — Introduction to OpenModelica for Process Engineers** — [PDF](docs/01%20PDFs/00%20OpenModellica%20for%20Process%20Simulations.pdf) · [DOCX](docs/00%20Docs/00%20OpenModellica%20for%20Process%20Simulations.docx)
+13. **Guide 01 — Material Stream Modelling in OpenModelica** — [PDF](docs/01%20PDFs/01%20Material%20Stream%20Modelling%20in%20OpenModellica.pdf) · [DOCX](docs/00%20Docs/01%20Material%20Stream%20Modelling%20in%20OpenModellica.docx)
+14. **Building models against the patched OMChemSim** — [MODELLING_GUIDE.md](MODELLING_GUIDE.md)
+15. **OMChemSim patch record** — [ATTRIBUTION.md](vendor/OMChemSim-v1.0/ATTRIBUTION.md)
+16. **Material streams: two property methods in one model** — [03_Multi_Stream/README.md](03_Multi_Stream/README.md)
+17. **Example One — Modelling Process walkthrough** — [Modeling_Process.md](00%20Example_One/Modeling_Process.md)
 
 ---
 
@@ -481,6 +562,6 @@ Process engineer, process modelling engineer and simulation engineer with around
 
 ⭐ If this helps your process modelling journey, consider starring the repository.
 
-**More guides are on the way** — [see what's next](#️-roadmap)
+**Unit operations are next** — pumps, heaters and coolers, compressors — [see the roadmap](#️-roadmap)
 
 </div>
